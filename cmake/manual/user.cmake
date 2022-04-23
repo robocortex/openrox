@@ -1,0 +1,34 @@
+### User manual generation ####
+
+#option(OPENROX_CREATE_MANUAL_USER "Use pdflatex to build the user manual" OFF)
+
+if (OPENROX_CREATE_MANUAL_USER)
+   set(OLD_CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ${CMAKE_FIND_ROOT_PATH_MODE_PROGRAM})
+   set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+   # find_package(LATEX)
+   
+   set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ${OLD_CMAKE_FIND_ROOT_PATH_MODE_PROGRAM})
+
+   if (NOT PDFLATEX_COMPILER)
+      message(FATAL_ERROR "PdfLatex is needed to build the documentation. Please install it correctly")
+   endif()
+
+   add_custom_target (${OPENROX_TARGET_RELEASE}_user_manual
+      COMMAND ${CMAKE_COMMAND} -E copy_directory  ${OPENROX_SOURCE_DIR}/manual/user ${PROJECT_BINARY_DIR}/${OPENROX_TARGET_RELEASE}_user_manual
+   )
+
+   add_custom_command (TARGET ${OPENROX_TARGET_RELEASE}_user_manual
+      COMMAND ${PDFLATEX_COMPILER} ${PROJECT_BINARY_DIR}/${OPENROX_TARGET_RELEASE}_user_manual/${OPENROX_TARGET_RELEASE}_user_manual.tex
+      WORKING_DIRECTORY ${PDFLATEX_COMPILER} ${PDFLATEX_COMPILER} ${PROJECT_BINARY_DIR}/${OPENROX_TARGET_RELEASE}_user_manual/
+   )
+
+   add_custom_command (TARGET ${OPENROX_TARGET_RELEASE}_user_manual
+      COMMAND ${PDFLATEX_COMPILER} ${PROJECT_BINARY_DIR}/${OPENROX_TARGET_RELEASE}_user_manual/${OPENROX_TARGET_RELEASE}_user_manual.tex
+      WORKING_DIRECTORY ${PDFLATEX_COMPILER} ${PDFLATEX_COMPILER} ${PROJECT_BINARY_DIR}/${OPENROX_TARGET_RELEASE}_user_manual/
+   )
+
+   add_custom_command (TARGET ${OPENROX_TARGET_RELEASE}_user_manual
+      COMMAND ${PDFLATEX_COMPILER} ${PROJECT_BINARY_DIR}/${OPENROX_TARGET_RELEASE}_user_manual/${OPENROX_TARGET_RELEASE}_user_manual.tex
+      WORKING_DIRECTORY ${PDFLATEX_COMPILER} ${PDFLATEX_COMPILER} ${PROJECT_BINARY_DIR}/${OPENROX_TARGET_RELEASE}_user_manual/
+   )
+endif()

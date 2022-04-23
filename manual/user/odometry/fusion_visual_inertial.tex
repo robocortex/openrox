@@ -1,0 +1,22 @@
+\subsection{Visual and Inertial Odometry}
+\label{sse:odometry_visual_inertial}
+
+When the displacement between two successive images is too large, the visual odometry may fail. Consequently, it is necessary to identify the target to get the camera pose relative to the known model. Using an inertial sensor allows us to get a high rate prediction of the target position in the image even if the displacement is very important. The visual odometry may be successful as long as the inertial prediction is precise enough. As the inertial prediction does not depend on the actual scene viewed by the camera, it is possible to predict the target position even if it is out of the camera field of view. Consequently, when the target reappears in the camera field of view, no identification method will be necessary to make visual odometry if the inertial prediction is close enough from the real target position. \\
+Note that to make an efficient visual - inertial odometry, the calibration pose between the two sensors shall be known by the user and the target frame shall coincide with the local tangent plane used as reference for the inertial measures.    
+
+\subsubsection{Main functions related to {\tt Rox\_Odometry\_Visual\_Inertial}}
+\label{sss:odometry_visual_inertial_methods}
+
+The main functions to manipulate visual - inertial odometry are~:
+\begin{description}
+  \item[rox\_odometry\_visual\_inertial\_init\_async\_observer]: Performs the detection of the given target and initializes the inertial observer using the odometry results. This function initializes an asynchronous observer implying that visual and inertial data have to be precisely dated. The dating shall be expressed in seconds and have the same time reference for both inertial and visual data (i.e using the UTC time)~;
+  \item[rox\_odometry\_visual\_inertial\_init\_sync\_observer]: Performs the detection of the given target and initializes the inertial observer using the odometry results. This function initializes a synchronous observer~;
+  \item[rox\_odometry\_visual\_inertial\_make]: Makes the visual - inertial odometry. Note that the inertial observer can be reinitialized by a visual detection method if the target has been lost during 10 successive images~;
+  \item[rox\_odometry\_visual\_inertial\_get\_matsl3\_prediction\_copy]: Gets a copy of the initialization homography~;
+\end{description}
+
+If you need further information about visual and inertial odometry functions, please refer to the Programmer Manual.
+See the example ``rox\_example\_odometry\_visual\_inertial.tex'' for an
+example of use.
+
+% \input{odometry/rox_example_odometry_visual_inertial.tex}

@@ -1,0 +1,108 @@
+\section{Image}
+\label{sec:image}
+
+The image module contains structures and methods for manipulating several image formats. 
+
+\subsection{The object {\tt Rox\_Image}}
+\label{sse:image_object}
+
+An image object can be declared using the pointer to a \lstinline$Rox_Image_Struct$ structure. 
+\begin{lstlisting}
+typedef struct Rox_Image_Struct* Rox_Image;
+\end{lstlisting}
+
+\subsection{Creating/Deleting a {\tt Rox\_Image}}
+\label{sse:image_newdel}
+
+Functions are provided to allocate and deallocate a \lstinline$Rox_Image$ object~:
+
+\begin{lstlisting}
+Rox_Error rox_image_new(Rox_Image * image, Rox_Uint cols, Rox_Uint rows);
+\end{lstlisting}
+
+The function allocates memory for data depending parameters  `cols' and `rows' which correspond to image size.\\
+
+An image can be created by directly reading a PGM file from disk using the following function:
+\begin{lstlisting}
+Rox_Error rox_image_new_readpgm (Rox_Image *image, const char *filename);
+\end{lstlisting}
+The function first allocate memory for the structure with the rows and
+cols parameters matching the image file to load. Then it stores the
+image data in the image object.
+
+The following function deallocates memory for a \lstinline$Rox_Image$:
+\begin{lstlisting}
+Rox_Error rox_image_del(Rox_Image * image);
+\end{lstlisting}
+ It is necessary to call this function when the object is not used anymore.
+
+
+\subsection{Main functions related to {\tt Rox\_Image}}
+\label{sse:image_functs}
+
+Once the object \lstinline$Rox_Image$ has been allocated, it is possible to get information from \lstinline$Rox_Image$.
+
+\begin{description}
+% \item [rox\_image\_get\_data]~: Get the pointer of the first pixel intensity values.
+  \item [rox\_image\_get\_rows]~: Get the image rows.
+  \item [rox\_image\_get\_cols]~: Get the image columns.
+\end{description}
+
+An image can be read from a PGM file if the size is compatible.
+Typically, we use a \lstinline$rox_image_new_readpgm$ function to
+read the first image of a sequence and allocate correctly the
+corresponding structure. Then, assuming that all images of a sequence
+have the same dimensions, we can re-use the same structure for the
+next images, using the \lstinline$rox_image_readpgm$ function. Thus,
+the structure is safely allocated while loading the reference image
+and the other images are read previously to perform the tracking.
+Currently, the only supported format in the library is raw PGM
+(Portable Gray Map) \footnote{{http://netpbm.sourceforge.net/doc/pgm.html}}:
+\begin{lstlisting}
+Rox_Error rox_image_readpgm (Rox_Image image, const char *filename);
+\end{lstlisting}
+The function returns an error if the dimensions of the image file do not match the dimesions of the allocated image.
+
+External libraries can be easily used to read images from files. Then,
+\rox{} allows to input several image formats. The list of
+available image formats is given in the enumeration
+\lstinline$Rox_Image_Format_Enum$ (see the Programmer Manual for a
+complete list):
+
+\begin{lstlisting}
+enum Rox_Image_Format_Enum{
+     Rox_Image_Format_Grays,
+     Rox_Image_Format_YUV422,
+     Rox_Image_Format_Color_RGBA,
+     Rox_Image_Format_Color_BGRA,
+     Rox_Image_Format_Color_ARGB,
+     Rox_Image_Format_Color_BGR,
+     Rox_Image_Format_Color_RGB
+};
+\end{lstlisting}
+
+The image data can be set using the following function:
+\begin{lstlisting}
+Rox_Error rox_image_set_data (Rox_Image image, Rox_Uchar *data, Rox_Uint bytesPerRow, enum Rox_Image_Format format);
+\end{lstlisting}
+This function transforms an external image buffer to the rox internal
+format and store this information inside the Rox\_Image object.  The
+input image format shall be a 3 or 4 channel interleaved image
+containing Red, Blue and Green channels.  Only one of these channels
+(specified by the channel parameter) will be used while converting to
+rox internal format.  User needs to specify the exact format of the
+input buffer (e.g. RGB, BGR, RGBA, etc.) as it is impossible to guess
+it automatically, as well as how many bytes are used per row in the
+input image.
+
+Finally, in order to know if an image suitable for identification and odometry computation, the following functions allows to get a quality score.
+
+The first function is fast but do not provide precise information: 
+\begin{lstlisting}
+Rox_Error rox_image_get_quality_score (Rox_Real *score, Rox_Image image);
+\end{lstlisting}
+
+The second function is slower but provides precise information on the quality of an image:
+\begin{lstlisting}
+Rox_Error rox_image_get_quality_score_precise (Rox_Real *score, Rox_Image image);
+\end{lstlisting}

@@ -1,0 +1,35 @@
+\section{Model Single Plane}
+\label{sec:model_single_plane}
+
+\subsection{The {\tt Rox\_Model\_Single\_Plane} object}
+\label{sse:model_single_plane_typedef}
+A \lstinline$Rox_Model_Single_Plane$ object can be declared using the pointer to a \lstinline$Rox_Model_Single_Plane_Struct$: 
+
+\begin{lstlisting}
+typedef struct Rox_Model_Single_Plane_Struct* Rox_Model_Single_Plane;
+\end{lstlisting}
+
+The structure is opaque to the user and can only be accessed through constructors, destructors and methods described in the following sections.
+
+\subsection{Creating/Deleting a {\tt Rox\_Model\_Single\_Plane}}
+\label{sse:model_single_plane_newdel}
+
+Functions are provided to allocate, initialize and deallocate an \lstinline$Rox_Model_Single_Plane$ object~:
+\begin{lstlisting}
+Rox_Error rox_model_single_plane_new(Rox_Model_Single_Plane * model_single_plane, Rox_Image image, Rox_Real sizex, Rox_Real sizey);
+\end{lstlisting}
+The \lstinline$rox_model_single_plane_new$ function allocates memory for data. \\ 
+
+\begin{lstlisting}
+Rox_Error rox_model_single_plane_del(Rox_Model_Single_Plane * model_single_plane);
+\end{lstlisting}
+The \lstinline$rox_model_single_plane_del$ function deallocates memory for an \lstinline$Rox_Model_Single_Plane$ structure. It is necessary to call this function when the
+structure is not used any more or before overwriting it.
+
+\subsection{Main functions related to {\tt Rox\_Model\_Single\_Plane}}
+\label{sse:model_single_plane_functs}
+The texture (i.e. an image) associated to the planar model can be set using the following function:
+\begin{lstlisting}
+Rox_Error rox_model_single_plane_set_template(Rox_Model_Single_Plane model, Rox_Image image, Rox_Real sizex, Rox_Real sizey); 
+\end{lstlisting}
+The real size of the planar target must be given.

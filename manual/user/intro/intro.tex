@@ -1,0 +1,33 @@
+\chapter{Introduction}
+\label{cha:intro}
+
+\rox{} is a computer vision software written in strict ANSI-C
+and optimized for real-time applications. The optimization has been performed with SSE 4.2 for x86 processors and Neon for Arm processors.
+No extra dependencies are required to compile the software, just the standard C library. The software provides advanced
+algorithms that can be used for applications like vision-guided robot
+control and augmented reality. \\
+
+Contrarily to standard computer vision software, \rox{} uses {\bf
+direct methods} and {\bf dense information} to solve computer vision
+problems. This approach is more robust and accurate than sparse
+features-based methods, but generally requires high computation
+resources. The use of a new fast optimization technique called {\bf
+ESM (Efficient Second-order Approximation Method)} allows to use dense
+direct methods in real-time. The ESM technique was proved to have a
+higher convergence rate (third-order) than the Newton optimization
+technique (second-order) while being more efficient.\\
+
+The present version of the \rox{} is composed of the following modules~:
+
+\begin{description}
+  \item[Utils]~: module with basic structures and functions used by all the other modules ;
+  \item[Maths]~: module with mathematical structures and methods ;
+  \item[Model]~: module with structures and functions to handle target models ;
+  \item[Vision]~: module with structures and functions for computer vision ;
+  \item[Sensor]~: module with structures and functions for handling sensors ;
+  \item[Odometry]~: module with structures and methods for visual odometry computation (sensor localization). The output of the module is the pose of the sensor (translation and rotation in the Cartesian space) relative to a target model ;
+
+\end{description}
+
+\input{intro/install.tex}
+%\input{intro/coding.tex}

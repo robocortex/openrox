@@ -1,0 +1,42 @@
+\section{Inertia}
+\label{sec:inertia}
+
+The inertia module, only used for the visual - inertial odometry, is composed by two sub-modules. The {\tt Rox\_Inertial} object contains the accelerometer ($m/s^2$), gyrometer ($rad/s$) and magnetometer calibrated measures and the acquisition timestamp. This data is required by the visual - inertial odometry and available through the {\tt Rox\_Inertial} object. Indeed, after setting the {\tt Rox\_Inertial} object with valid data, the user is able to make visual - inertial odometry using the functions described in section \ref{sss:odometry_visual_inertial_methods} and the {\tt Rox\_Inertial} object.
+
+\subsection{The {\tt Rox\_Inertial} object}
+\label{sse:inertial_struct}
+
+A \lstinline$Rox_Inertial$ object can be defined using the pointer to a \lstinline$Rox_Inertial_Structure$:
+\begin{lstlisting}
+typedef struct Rox_Inertial_Struct* Rox_Inertial;
+\end{lstlisting}
+
+\subsection{Creating/Deleting a {\tt Rox\_Inertial}}
+\label{sse:inertial_newdel}
+
+Functions are provided to allocate and deallocate a \lstinline$Rox_Inertial$ object~:
+
+\begin{lstlisting}
+Rox_Error rox_inertial_new (Rox_Inertial *inertial, const Rox_Float frequency);
+\end{lstlisting}
+The function allocates memory for the inertial object and returns a pointer on the newly created object.
+
+\begin{lstlisting}
+Rox_Error rox_inertial_del (Rox_Inertial *inertial);
+\end{lstlisting}
+The function deallocates memory for a \lstinline$Rox_Inertial$ object. 
+It is necessary to call this function when the object is not used anymore. \\
+
+\subsection{Main functions related to {\tt Rox\_Inertial}}
+\label{sse:inertial_functs}
+
+The inertial measures can be set in the \lstinline$Rox_Inertial$ object using the following function~:
+
+\begin{lstlisting}
+Rox_Error rox_inertial_set_measure(Rox_Inertial inertial, const Rox_Real* A, const Rox_Real* W, const Rox_Real* M, Rox_Real timestamp);
+\end{lstlisting}
+
+This function set the accelerometer, gyrometer and magnetometer measures from \lstinline$Rox_Real$ buffers and sets the acquisition timestamp~;
+
+If you need further information about inertial functions, please refer to the Programmer Manual.
+

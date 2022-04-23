@@ -1,0 +1,32 @@
+//==============================================================================
+//
+//    OPENROX   : File ansi_mulmatmat.h
+//
+//    Contents  : API of ansi mulmatmat module
+//
+//    Author(s) : R&D department directed by Ezio MALIS
+//
+//    Copyright : 2022 Robocortex S.A.S.
+//
+//    License   : LGPL v3 or commercial license
+//
+//==============================================================================
+
+#ifndef __OPENROX_ansi_mulmatmat__
+#define __OPENROX_ansi_mulmatmat__
+
+#include <system/arch/compiler.h>
+#include <system/arch/platform.h>
+#include <generated/config.h>
+
+//! \ingroup Matrix
+//! \addtogroup Transpose
+//! @{
+
+ROX_API int rox_ansi_array_double_mulmatmat ( double * res_data, int res_rows, int res_cols, double * one_data, double * two_data, int two_rows );
+ROX_API int rox_ansi_array_float_mulmatmat ( float * res_data, int res_rows, int res_cols, float * one_data, float * two_data, int two_rows );
+ROX_API int rox_ansi_array2d_double_mulmatmat ( double ** res_data, int res_rows, int res_cols, double ** one_data, double ** two_data, int two_rows );
+
+//! @} 
+
+#endif

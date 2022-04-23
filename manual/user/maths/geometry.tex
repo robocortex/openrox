@@ -1,0 +1,40 @@
+\section{Geometry}
+\label{sec:geometry}
+
+This module contains structures and methods for geometry manipulation. \\
+
+The object \lstinline$Rox_Point2D_Double$ and \lstinline$Rox_Point3D_Double$ are made to contain the coordinates of 2D and 3D points.
+
+\begin{lstlisting}
+typedef struct Rox_Point2D_Double_Struct Rox_Point2D_Double;
+\end{lstlisting}
+
+\begin{lstlisting}
+typedef struct Rox_Point3D_Double_Struct Rox_Point3D_Double;
+\end{lstlisting}
+
+The structures are defined as follows:
+
+\begin{lstlisting}
+struct Rox_Point2D_Double_Struct
+{
+   /*! The u-axis coordinate in pixel*/
+   Rox_Real u;
+   /*! The v-axis coordinate in pixel*/
+   Rox_Real v;
+};
+\end{lstlisting}
+
+\begin{lstlisting}
+struct Rox_Point3D_Double_Struct
+{
+   /*! The x-axis coordinate in meters*/
+   Rox_Real X;
+   /*! The y-axis coordinate in meters*/
+   Rox_Real Y;
+   /*! The z-axis coordinate in meters*/
+   Rox_Real Z;
+};
+\end{lstlisting}
+
+More information about the use of geometry objects is available in the Programmer Manual

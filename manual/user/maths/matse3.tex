@@ -1,0 +1,79 @@
+\subsection{Matrices of the Special Euclidean Group}
+\label{sse:matse3}
+~\\~\\
+The Special Euclidean Group SL(3) is defined by the set of 4$\times$4 matrices ${\bf T}$:
+\[
+{\bf T} = \left[\begin{array}{cc} {\bf R} & {\bf t} \\ 0 & 1 \end{array} \right]
+\]
+where ${\bf R} \in SO(3)$ is a rotation matrix that verify the following constraint:
+\[
+{\bf R}^\top {\bf R} = {\bf I}
+\] 
+Setting:
+\[
+{\bf R} = \left[ \begin{array}{ccc} r_{11} & r_{12} & r_{13} \\ r_{21} & r_{22} & r_{23} \\ r_{31} & r_{32} & r_{33} \end{array} \right]
+\]
+and
+\[
+{\bf t} = \left[ \begin{array}{c}  t_1 \\ t_2 \\ t_3 \end{array} \right]
+\]
+The matrix ${\bf T}$ can be written as:
+\[
+{\bf T} = \left[ \begin{array}{cccc} r_{11} & r_{12} & r_{13} & t_1 \\ r_{21} & r_{22} & r_{23} & t_2 \\ r_{31} & r_{32} & r_{33} & t_3 \\ 0 & 0 & 0 & 1 \end{array} \right]
+\]
+
+\subsubsection{The object {\tt Rox\_MatSE3}}
+\label{sss:matse3}
+~\\~\\
+A matse3 object can be declared using the pointer to a \lstinline$Rox_MatSE3_Struct$: 
+
+\begin{lstlisting}
+typedef struct Rox_MatSE3_Struct* Rox_MatSE3;
+\end{lstlisting}
+
+The structure is opaque to the user and can only be accessed through constructors, destructors and methods described in the following sections.
+
+\subsubsection{Creating/Deleting a {\tt Rox\_MatSE3}}
+\label{sss:matse3_delnew}
+~\\~\\
+Functions are provided to allocate, initialize and deallocate an \lstinline$Rox_MatSE3$ object~:
+\begin{lstlisting}
+Rox_Error rox_matse3_new(Rox_MatSE3 * T);
+\end{lstlisting}
+The \lstinline$rox_matse3_new$ function allocates memory for data. By default, the matrix is initialized to the identity.\\ 
+
+% \begin{lstlisting}
+% Rox_MatSE3 rox_matse3_new_init(const Rox_Real data[12]);
+% \end{lstlisting}
+% The \lstinline$rox_matse3_new_init$ function first allocates memory with the default constructor and then copies the parameter `data' to initialize matrix. The data contains the entries of the matrix row by row :
+
+% \[
+% data = \left\{ \begin{array}{cccccccccccc} r_{11} & r_{12} & r_{13} & t_1 & r_{21} & r_{22} & r_{23} & t_2 & r_{31} & r_{32} & r_{33} & t_3 \end{array} \right\}
+% \]
+
+\begin{lstlisting}
+Rox_Error rox_matse3_del(Rox_MatSE3 * T);
+\end{lstlisting}
+The \lstinline$rox_matse3_del$ function deallocates memory for an \lstinline$Rox_MatSE3$ structure. It is necessary to call this function when the
+structure is not used any more or before overwriting it.
+
+\subsubsection{Main functions related to {\tt Rox\_MatSE3}}
+\label{sss:matse3_methods}
+~\\~\\
+
+Firstly, it is possible to get / set information from \lstinline$Rox_MatSE3$ structure:
+\begin{description}
+  \item[rox\_matse3\_get\_data\_copy]~: Get a copy of the data of the matse3 matrix.
+  \item[rox\_matse3\_get\_value]~: Returns a value of the matse3 matrix.
+  \item[rox\_matse3\_set\_data]~: Set the data of the matse3 matrix.
+  \item[rox\_matse3\_set\_value]~: changes a value of the matrix.
+\end{description}
+
+Several functions are provided to use matrices, here the most important functions will be described to make basic matrix calculus.
+\begin{description}
+  \item[rox\_matse3\_mulmatmat]~: Computes the multiplication of two matrices.
+  \item[rox\_matse3\_inv]~: Computes the inverse of the matrix.
+  \item[rox\_matse3\_display]~: Display the matrix.
+\end{description}
+
+Other functions are provided, further information is available in the programmer manual.

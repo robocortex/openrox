@@ -1,0 +1,84 @@
+SET(COMPILER "clang")
+
+# CLANG Configuration
+
+# CLEAN FLAGS
+SET(${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS "")
+SET(${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS_DEBUG "")
+
+SET(${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS "")
+SET(${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS_DEBUG "")
+
+list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS_DEBUG "-std=c99 -DDEBUG")
+list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS_DEBUG "-DDEBUG")
+
+# All warnings activated
+list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS "-std=c99 -Wall")
+list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS "-Wall -Wno-reorder -Wno-unknown-pragmas")
+
+# Set specific optimization flags
+list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS_DEBUG "-O0")
+list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS_DEBUG "-O0")
+list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS_RELEASE "-O3")
+list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS_RELEASE "-O3")
+
+if (OPENROX_HAS_AVX_SUPPORT AND ${PROJECT_NAME}_CREATE_PLATFORM_OPTIMIZED_AVX)
+   set (OPENROX_USE_AVX true)
+   add_definitions("-DROX_USE_AVX")
+   list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS       "-msse4.2 -mavx")
+   list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS_DEBUG "-msse4.2 -mavx")
+
+   list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS       "-msse4.2 -mavx")
+   list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS_DEBUG "-msse4.2 -mavx")
+
+elseif (OPENROX_HAS_SSE_SUPPORT AND ${PROJECT_NAME}_CREATE_PLATFORM_OPTIMIZED)
+   set (OPENROX_USE_SSE true)
+   add_definitions("-DROX_USE_SSE")
+   list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS "-msse4.2")
+   list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS_DEBUG "-msse4.2")
+
+   list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS "-msse4.2")
+   list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS_DEBUG "-msse4.2")
+elseif (OPENROX_HAS_NEON_SUPPORT AND ${PROJECT_NAME}_CREATE_PLATFORM_OPTIMIZED)
+   set (OPENROX_USE_NEON true)
+   add_definitions("-DROX_USE_NEON")
+   if(NOT ANDROID)
+      list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS "-arch armv7")
+      list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS "-marm")
+      # the cortex a9 cpu is not supported with arm64
+      # list(APPEND OPENROX_LOCAL_CMAKE_C_FLAGS "-mcpu=cortex-a9")
+      list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS "-mfpu=neon")
+      list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS "-mfloat-abi=softfp")
+
+      list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS "-arch armv7")
+      list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS "-marm")
+      # the cortex a9 cpu is not supported with arm64
+      # list(APPEND OPENROX_LOCAL_CMAKE_CXX_FLAGS "-mcpu=cortex-a9")
+      list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS "-mfpu=neon")
+      list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS "-mfloat-abi=softfp")
+   endif()
+endif()
+
+# list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS "-Qunused-arguments")
+# list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS "-Qunused-arguments")
+# list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS_DEBUG "-Qunused-arguments")
+# list(APPEND ${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS_DEBUG "-Qunused-arguments")
+
+#Create argument lists for debug
+foreach(param ${${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS_DEBUG})
+   set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${param}")
+endforeach(param ${${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS_DEBUG})
+
+foreach(param ${${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS_DEBUG})
+   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${param}")
+endforeach(param ${${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS_DEBUG})
+
+#Create argument lists for release
+
+foreach(param ${${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS})
+   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${param}")
+endforeach(param ${${PROJECT_NAME}_LOCAL_CMAKE_C_FLAGS})
+
+foreach(param ${${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS})
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${param}")
+endforeach(param ${${PROJECT_NAME}_LOCAL_CMAKE_CXX_FLAGS})

@@ -1,0 +1,62 @@
+\section{Timer}
+\label{sec:timer}
+
+The Timer module contains functions for time measurements. The module
+is useful to measure the computation time when
+developing.\\
+
+\subsection{The {\tt Rox\_Timer} object}
+\label{sse:timer_object}
+
+A \lstinline$Rox_Timer$ object can be defined using the pointer to a \lstinline$Rox_Timer$:
+\begin{lstlisting}
+typedef struct Rox_Timer_Struct* Rox_Timer;
+\end{lstlisting}
+
+The \lstinline$Rox_Timer$ object can be used both under Linux, Windows or MacOS X without any change.  \\
+
+\subsection{Creating/Deleting a {\tt Rox\_Timer}}
+\label{sse:timer_creating}
+
+The following function allows to create/delete a \lstinline$Rox_Timer$ object:
+\begin {description}
+\item [rox\_timer\_new]~: Create a \lstinline$Rox_Timer$ and allocate memory.
+\item [rox\_timer\_del]~: Delete a \lstinline$Rox_Timer$ and free memory.
+\end {description}
+
+\subsection{Main functions related to {\tt Rox\_Timer}}
+\label{sse:timer_methods}
+
+The following functions shall be used for time measurement:
+
+\begin {description}
+\item [rox\_timer\_start]~: Start the timer.
+\item [rox\_timer\_stop]~: Stop the timer and return the time elapsed since the initialization.
+\end {description}
+
+\noindent Example~:
+
+\begin{lstlisting}
+   //Create Rox_Timer 
+   Rox_Timer timer = 0
+
+   //Create Rox_Timer 
+   rox_timer_new(&timer);
+
+   //Start the timer
+   rox_timer_start(timer);
+
+   // Here comes the code for which you make time measurements
+   ...
+
+   // Stop the timer
+   Rox_Float time_ellapsed = rox_timer_stop(timer);
+
+   // Display time elapsed
+   printf("Elapsed Time = \%f ms", time_elapsed \n);
+
+   // Delete the timer
+   rox_timer_del(&timer);
+\end{lstlisting}
+
+Information about timers is available in the Programmer Manual.

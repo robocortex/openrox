@@ -1,0 +1,57 @@
+\subsection{Visual Odometry Multi Plane}
+\label{sse:odometry_multi_plane}
+
+The odometry module enables tracking of a textured convex polyhedron of $n$ faces whose real
+dimensions are known. The estimation of the camera pose is obtained whatever the part of the object the 
+camera is looking at. The object is considered as a whole and the module uses all visible information 
+to get a precise and stable localization of the object. The simplest example of a convex polyhedron 
+is a cube (6 faces). The object to track using this module shall be textured on all the faces. Constraints
+related to texture are similar to those of 2D planar odometry. 
+
+\subsubsection{The {\tt Rox\_Odometry\_Multi\_Plane} object}
+\label{sss:odometry_multi_plane_object}
+
+A \lstinline$Rox_Odometry_Multi_Plane$ object is a pointer to the \lstinline$Rox_Odometry_Multi_Plane_Struct$ structure:
+\begin{lstlisting}
+typedef struct Rox_Odometry_Multi_Plane_Struct* Rox_Odometry_Multi_Plane;
+\end{lstlisting}
+The structure is opaque to the users.
+
+\subsubsection{Creating/Deleting a {\tt Rox\_Odometry\_Multi\_Plane}}
+\label{sss:odometry_multi_plane_newdel}
+Functions are provided to allocate and deallocate a \lstinline$Rox_Odometry_Multi_Plane$ object~:
+
+\begin{lstlisting}
+Rox_Odometry_Multi_Plane rox_odometry_multi_plane_new(Rox_Odometry_Multi_Plane_Params params, Rox_Model_Multi_plane model);
+\end{lstlisting}
+The function allocates memory for the odometry object, according to the {\tt model} and {\tt params} parameters and returns a pointer on the newly created object.
+
+A 3D object model shall be passed to the odometry module for an appropriate odometry process (see section~\ref{sec:model_multi_plane}). 
+The precision of the 3D vertices passed as input is the key to the accuracy of the odometry results. 3D vertices are used 
+to simulate the object image projection. If the vertices are not well defined, the alignment of the real object and the virtual 
+object is not possible. Scale of the vertices is not important for the visual odometry. However the output pose varies with 
+the input scale.
+
+Carefully choosing textures is very important for a robust odometry. The picture captured for each quadrilateral shall be as much 
+parallel as possible relative to the face. Blur, noise and other lighting artefacts shall be avoided. Textures shall be as big as 
+possible (e.g. a 512{*}512 texture per quadrilateral). If possible, use the same device for capturing the texture and for the 
+odometry process, in order to minimize differences between images.
+
+\begin{lstlisting}
+Rox_Void rox_odometry_multi_plane_del(Rox_Odometry_Multi_Plane odometry);
+\end{lstlisting}
+The \lstinline$rox_odometry_multi_plane_del$ function deallocates memory for a \lstinline$Rox_Odometry_Multi_Plane$ object. It is necessary to call this function when the object is not used anymore. \\
+
+\subsubsection{Main functions related to {\tt Rox\_Odometry\_Multi\_Plane}}
+\label{sss:odometry_multi_plane_methods}
+
+The main functions to manipulate a \lstinline$Rox_Odometry_Multi_Plane$ object are~:
+\begin{description}
+  \item[rox\_odometry\_multi\_plane\_make]: Performs the visual odometry and update the camera pose~;
+  \item[rox\_odometry\_multi\_plane\_get\_pose]: Returns the pose matrix~;
+  \item[rox\_odometry\_multi\_plane\_set\_pose]: Set the pose matrix~;
+  % \item[rox\_odometry\_get\_score]: Returns the quality score of visual odometry~;
+\end{description}
+
+Please refer to the Programmer Manual for further information about visual odometry functions.
+See the example ``rox\_example\_odometry\_multi\_plane.c'' for an example of use.

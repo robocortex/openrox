@@ -1,0 +1,16 @@
+\section{Identification}
+\label{sec:ident}
+
+The identification module contains structures and methods for the identification of model images and contains the following sub-modules:
+
+\begin{description}
+
+\item[Photoframe identification]~: Module with structures and methods for texture identification using a photoframe around the model image.
+\item[Texture identification]~: Module with structures and methods for texture identification. This module allows the user to define textured model images. The identification at run-time is generally slower than the database identification but can be accelerated using a photoframe around the model image.
+\item[Database identification]~: Module with structures and methods for model identification in a database.The database identification module needs the generation of a database from an image model. This offline generation step is time consuming but can be performed once and for all. At runtime, the database identification is faster than the texture identification since many computations have already been done offline.
+\end{description}
+
+\input{vision/ident_photoframe}
+\input{vision/ident_texture}
+\input{vision/ident_database}
+%\input{vision/ident_offline}

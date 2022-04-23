@@ -1,0 +1,51 @@
+\section{Detection Parameters}
+\label{sec:detection_params}
+
+\subsection{The Rox\_Detection\_Params object}
+\label{sse:detection_params_object}
+
+The object \lstinline$Rox_Detection_Params$ contains two
+parameters that can be used to define the visual detection.
+ The parameters are the following:
+
+\begin{itemize}
+\item Bandwidth : the approximate size of the object to be detected 
+\item Sensitivity : the motion detection sensitivity
+\end{itemize}
+
+The detection parameters are stored in a \lstinline$Rox_Detection_Params_Struct$ structure. A \lstinline$Rox_Detection_Params$ object is opaque and can be accessed using the pointer to a \lstinline$Rox_Detection_Params_Struct$ structure: 
+\begin{lstlisting}
+typedef struct Rox_Detection_Params_Struct* Rox_Detection_Params;
+\end{lstlisting}
+
+\subsection{Creating/Deleting a Rox\_Detection\_Params object}
+\label{sse:detection_params_creating}
+
+\rox{} provides functions to create / delete the Rox\_Detection\_Params structure~:
+
+\begin{lstlisting}
+Rox_Detection_Params rox_detection_params_new(Rox_Void);
+\end{lstlisting}
+The \lstinline$rox_detection_params_new$ function allocates memory for the structure, 
+sets parameters with default values (\lstinline$bandwidth = (20x30) pixels$, \lstinline$sensitivity = 1.0$) and returns a pointer on the newly created structure.\\
+
+\begin{lstlisting}
+Rox_Void rox_detection_params_del(Rox_Detection_Params Params);
+\end{lstlisting}
+The \lstinline$rox_detection_params_del$ function deallocates memory for a parameter structure. It
+is necessary to call this function when the structure is not used anymore or before overwriting it.
+
+\subsection{Main functions related to the object Rox\_Detection\_Params}
+\label{sse:detection_params_functions}
+
+The motion detection algorithm has two important parameters set at the parameters structure
+initialization~: `bandwidth', `sensitivity'. Functions are provided to set these parameters~:
+
+\begin{itemize}
+  \item \lstinline$rox_detection_params_set_bandwidth$~: Sets the bandwidth parameter which is the approximate size of the moving object to detect. If the bandwidth is small, parts of bigger objects will be detected separately. On the contrary, if the   bandwidth is big, smaller objects may be grouped together. 
+  \item \lstinline$rox_detection_params_set_sensitivity$~: Sets sensitivity parameter. The higher the sensitivity the more objects will be detected but false detections may appear (due to lighting changes, noise, or other minor changes in the image).
+\end{itemize}
+
+Setting a parameter with a non valid value (for example -1) will leave it unchanged. \\
+
+Finally, the function \lstinline$rox_detection_params_set_license_path$ allows the user to set the path of the license file.

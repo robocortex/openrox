@@ -1,0 +1,79 @@
+\subsection{Matrix}
+\label{sse:matrix}
+
+The matrix module contains matrix definitions and necessary functions to manipulate matrix.
+
+\subsubsection{The {\tt Rox\_Matrix} object}
+\label{sss:matrix_object}
+
+A matrix object can be declared using the pointer to a \lstinline$Rox_Matrix_Struct$: 
+
+\begin{lstlisting}
+typedef struct Rox_Matrix_Struct* Rox_Matrix;
+\end{lstlisting}
+
+The structure is opaque to the user and can only be accessed through constructors, destructors and methods described in the following sections.
+
+\subsubsection{Creating/Deleting a {\tt Rox\_Matrix}}
+\label{sss:creating-deleting_matrix}
+Functions are provided to allocate, initialize and deallocate an \lstinline$Rox_Matrix$ object~:
+\begin{lstlisting}
+Rox_Error rox_matrix_new(Rox_Matrix* matrix, const Rox_Uint cols, const Rox_Uint rows);
+\end{lstlisting}
+The \lstinline$rox_matrix_new$ function allocates memory for data. 
+In this case, the size of allocated memory depends of parameters `cols' and `rows'.\\ 
+
+% \begin{lstlisting}
+% Rox_Matrix rox_matrix_new_init	(const Rox_Uint cols,
+% 				 const Rox_Uint rows,
+% 				 const Rox_Real *data);
+% \end{lstlisting}
+% The \lstinline$rox_matrix_new_init$ function first allocates memory with the default constructor and then copies the parameter `data' to initialize matrix.\\
+
+% \begin{lstlisting}
+% Rox_Matrix rox_matrix_new_zeros	(const Rox_Uint cols, 
+% 		 		 const Rox_Uint rows);
+% \end{lstlisting}
+% The \lstinline$rox_matrix_new_zeros$ function first allocates memory with the default constructor and sets to 0 all matrix elements.\\
+
+\begin{lstlisting}
+Rox_Error rox_matrix_del(Rox_Matrix * M);
+\end{lstlisting}
+The \lstinline$rox_matrix_del$ function deallocates memory for an \lstinline$Rox_Matrix$ structure. It is necessary to call this function when the structure is not used any more or before overwriting it.
+
+\subsubsection{Main functions related to {\tt Rox\_Matrix}}
+\label{sss:matrix_function}
+Several functions are provided for handling matrices. \\
+
+Firstly, it is possible to get / set information from \lstinline$Rox_Matrix$ structure:
+\begin{description}
+  \item[rox\_matrix\_get\_rows]~: Returns the number of rows of the matrix.
+  \item[rox\_matrix\_get\_cols]~: Returns the number of columns of the matrix.
+%  \item[rox\_matrix\_get\_size]~: Returns the size of the matrix.
+%  \item[rox\_matrix\_get\_data]~: Returns the data of the matrix.
+  \item[rox\_matrix\_get\_value]~: Returns a value of the matrix.
+  \item[rox\_matrix\_set\_value]~: changes a value of the matrix.
+  \item[rox\_matrix\_set\_zero]~: Sets to 0 all matrix elements.
+  \item[rox\_matrix\_set\_unit]~: Sets the identity matrix.
+\end{description}
+
+%{\bf N.B~:} The functions \lstinline$rox_matrix_set_null$ and \lstinline$rox_matrix_set_unit$ are very similar to 
+%\lstinline$rox_matrix_new_null$ and \lstinline$rox_matrix_new_unit$, the main difference is that the 
+%\lstinline$Rox_Matrix$ structure shall be already allocated when calling
+%\lstinline$rox_matrix_set_null$ or \lstinline$rox_matrix_set_unit$.
+
+%\paragraph{Matrix Calculus}
+%\label{par:matricial_calculus}
+
+%Many functions have been developed to use matrices, here the most important functions will be described to make basic matrix calculus.
+%\begin{description}
+%  \item[rox\_matrix\_add]~: Computes the addition of two matrices.
+%  \item[rox\_matrix\_sub]~: Computes the subtraction of two matrices.
+%  \item[rox\_matrix\_scm]~: Computes the multiplication of a matrix by a scalar.
+%  \item[rox\_matrix\_mulmatmat]~: Computes the multiplication of two matrices.
+%  \item[rox\_matrix\_transpose]~: Computes the transpose of a matrix.
+%  \item[rox\_matrix\_inv]~: Computes the inverse of the matrix.
+%\end{description}
+
+Other functions are provided, further information is available in the programmer manual.
+

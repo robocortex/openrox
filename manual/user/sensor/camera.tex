@@ -1,0 +1,87 @@
+\section{Camera}
+\label{sec:camera}
+\rox assumes that images are acquired by a camera that respects a standard pin-hole model. 
+With this model, straight lines in the 3D space will project to straight lines in the 2D image space.
+
+In a pin-hole model, the relation between a point M with coordinates
+(X,Y,Z,1) in reference frame and its equivalent with homogeneous
+coordinates (u,v,1) in the camera frame can be written as follows~:
+\begin{center}
+$
+\left( \begin{array}{c} u \\ v \\ 1 \\ \end{array} \right) \propto
+\underbrace{\left[ \begin{array}{ccc} f & s & c_u \\ 0 & f r & c_v \\ 0 & 0 & 1 \end{array} \right]}_{\mbox{\footnotesize{K }}} 
+\underbrace{\left[ \begin{array}{cccc} & & & t_x \\ & R_{3\times3} & & t_y \\ & & & t_z \\ 0&0&0&1 \end{array} \right]}_{\mbox{\footnotesize{T}}} 
+\left( \begin{array}{c} X \\ Y \\ Z \\ 1\\ \end{array} \right)
+$
+\end{center}
+
+The K matrix corresponds to camera intrinsic parameters where:
+\begin{description}
+   \item [f]~: Focal lenght in pixels
+   \item [r]~: Pixel ratio (equal to 1 for square pixels)
+   \item [s]~: Skew (equal to 0 for square or rectangular pixels)
+   \item [$c_u$]~: u-coordinate of the optical center projection in the image
+   \item [$c_v$]~: v-coordinate of the optical center projection in the image
+\end{description}
+
+The intrinsic parameters are generally fixed by the hardware and should not change with time.
+
+The procedure to calibrate the intrinsic parameters is described in the section~\ref{sse:camera_calibration}\\
+
+The T matrix corresponds to camera extrinsic parameters where:
+\begin{description}
+   \item [R]~: Rotation matrix between reference and current position of the camera
+   \item [t]~: Translation vector between reference and current position of the camera
+\end{description}
+
+The extrinsic parameters change depending on the camera localization and have to be computed for each image.\\
+
+{\bf \rox} provides functions and structures to handle these parameters. The intrinsic and extrinsic parameters are stored in \lstinline$Rox_Camera$ structure.
+% The extrinsic parameters are stored in \lstinline$Rox_Frame$ structure.\\
+
+\subsection{The {\tt Rox\_Camera} object}
+\label{sse:camera_struct}
+
+The structure \lstinline$Rox_Camera_Struct$ is designed to hold camera data: intrinsic and extrinsic parameters matrices and the image. 
+
+A camera object is opaque and can be accessed using the pointer \lstinline$Rox_Camera$ to a \lstinline$Rox_Camera_Struct$ structure. 
+\begin{lstlisting}
+typedef struct Rox_Camera_Struct* Rox_Camera;
+\end{lstlisting}
+
+\subsection{Creating/Deleting a {\tt Rox\_Camera}}
+\label{sse:camera_newdel}
+
+The library provides functions to create, initialize and delete \lstinline$Rox_Camera$ structure.
+\begin{lstlisting}
+Rox_Error rox_camera_new (Rox_Camera *camera, Rox_Uint cols, Rox_Uint rows);
+\end{lstlisting}
+The \lstinline$rox_camera_new$ function allocates memory for data. In this case, the size of allocated memory depends on parameters `cols' and `rows' which correspond to image size. 
+
+% The intrinsic and extrinsic parameters are respectively initialized with `K' and `T'.\\
+
+% If the parameters are unknown, `K' and `T' can be set to NULL.
+
+The \lstinline$rox_camera_new_readpgm$ function allocates memory for data read from a pgm file (`filename'):
+\begin{lstlisting}
+Rox_Error rox_camera_new_readpgm(Rox_Camera * camera, Rox_Char* filename);
+\end{lstlisting}
+If the user has a different file format (for example png or jpeg files), he can use its own library to load the image and then fill the Rox\_Image object contained in the Rox\_Camera object (see the Image module).
+
+The \lstinline$rox_camera_del$ function deallocates memory for an \lstinline$Rox_Camera$ structure. It is necessary to call this function when the structure is not used anymore:
+\begin{lstlisting}
+Rox_Error rox_camera_del(Rox_Camera * camera);
+\end{lstlisting}
+
+\subsection{Main functions related to {\tt Rox\_Camera}}
+\label{sse:camera_functs}
+
+The main functions to use an \lstinline$Rox_Camera$ structure are~:
+\begin{description}
+  \item [rox\_camera\_readpgm]~: Sets image field by loading a pgm file.
+  \item [rox\_camera\_get\_pose]~: Returns the pointer to the pose matrix.
+% \item [rox\_camera\_get\_frame]~: Returns the frame structure.
+  \item [rox\_camera\_set\_image]~: Set the image in the camera.
+\end{description}
+ 
+\input{sensor/calibration}

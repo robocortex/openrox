@@ -1,0 +1,94 @@
+\documentclass[12pt]{report}
+
+\usepackage[latin1]{inputenc}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{ae,aeguill}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{ifthen}
+\usepackage[figure, algoruled, lined]{algorithm2e}
+\usepackage{listings}
+\usepackage{makeidx}
+
+\setcounter{secnumdepth}{6}
+\setcounter{tocdepth}{6}
+
+%\usepackage{hyperref}
+\usepackage[left=3cm,top=3cm,right=3cm]{geometry} 
+
+\renewcommand{\labelitemi}{\includegraphics[width=6pt]{latex/bullet_robocortex}}
+
+\def \rox {{\bf OPENROX}}
+\def \roxdir {{openrox}}
+
+\lstloadlanguages{[ANSI]C}
+\lstset{
+  basicstyle=\small\ttfamily,
+  numberstyle=\tiny,
+  breaklines=true,
+  language=[ANSI]C
+}
+
+%\hypersetup{
+%  naturalnames=true,
+%  pdftitle={OPENROX},
+%  pdfauthor={Ezio MALIS},
+%  pdfsubject={User Manual}
+%}
+
+{\title{\vspace{-2cm}\includegraphics[width=0.9\columnwidth]{latex/logo_robocortex}\\~\\
+{\bf OPENROX} \\~\\ User's Manual of Version 1.0 \\}}
+
+\author{
+%  Ezio Malis 
+\\~\\
+www.robocortex.com
+}
+\date{}%\today
+\makeindex
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\cleardoublepage
+
+\tableofcontents
+\thispagestyle{empty}
+%\listoffigures
+%\thispagestyle{empty}
+\cleardoublepage
+\thispagestyle{empty}
+
+\input{intro/intro}
+\newpage
+\input{utils/utils}
+\newpage
+\input{maths/maths}
+\newpage
+\input{vision/vision}
+\newpage
+\input{sensor/sensor}
+\newpage
+\input{model/model}
+\newpage
+\input{detection/detection}
+\newpage
+\input{tracking/tracking}
+\newpage
+\input{odometry/odometry}
+
+%\appendix
+%\include{appendix/coding}
+% \include{appendix/compatibility}
+% \include{examp/sampleprogram}
+% \include{appendix/algorithm}
+% \include{appendix/model}
+% \include{appendix/performance}
+% \bibliographystyle{plain}
+
+%\addcontentsline{toc}{section}{References}
+%\bibliography{biblio/references}
+\printindex
+
+\end{document}

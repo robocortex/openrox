@@ -1,0 +1,53 @@
+\subsection{Visual odometry Single Plane}
+\label{sse:odometry_single_plane}
+
+\subsubsection{The {\tt Rox\_Odometry\_Single\_Plane} object}
+\label{sss:odometry_single_plane_object}
+
+A \lstinline$Rox_Odometry_Single_Plane$ is a pointer to the opaque structure \lstinline$Rox_Odometry_Single_Plane_Structure$:
+\begin{lstlisting}
+typedef struct Rox_Odometry_Single_Plane_Struct *Rox_Odometry_Single_Plane;
+\end{lstlisting}
+
+\subsubsection{Creating/Deleting a {\tt Rox\_Odometry\_Single\_Plane}}
+\label{sss:odometry_single_plane_newdel}
+Functions are provided to allocate and deallocate a \lstinline$Rox_Odometry_Single_Plane$ object~:
+
+\begin{lstlisting}
+Rox_Error rox_odometry_single_plane_new (Rox_Odometry_Single_Plane *odometry, Rox_Odometry_Single_Plane_Params params, Rox_Model_Single_Plane model);
+\end{lstlisting}
+The function allocates memory for the odometry object, according to
+the 'model' and `params' parameters and returns a pointer on the newly created object.
+
+\begin{lstlisting}
+Rox_Error rox_odometry_single_plane_del (Rox_Odometry_Single_Plane *odometry);
+\end{lstlisting}
+The function deallocates memory for a \lstinline$Rox_Odometry_Single_Plane$ object. 
+It is necessary to call this function when the object is not used anymore. \\
+
+\subsubsection{Main functions related to {\tt Rox\_Odometry\_Single\_Plane}}
+\label{sss:odometry_single_plane_methods}
+The main functions to manipulate a \lstinline$Rox_Odometry$ object are~:
+\begin{description}
+  \item[rox\_odometry\_single\_plane\_make]: Performs the visual odometry when the
+  displacement of the target is not too large~;
+  \item[rox\_odometry\_single\_plane\_get\_pose]: Returns the pose matrix~;
+  \item[rox\_odometry\_single\_plane\_set\_pose]: Set the pose matrix~;
+  \item[rox\_odometry\_single\_plane\_get\_score]: Returns the quality score of visual odometry~;
+\end{description}
+
+Please refer to the Programmer Manual for further information about visual odometry functions, 
+
+\subsubsection{Target identification}
+\label{sss:odometry_single_plane_dent}
+~\\~\\
+When the displacement of the target is very large in the image, it is sometimes necessary to search the target in the whole image. The same problem can arise when the target is lost, occluded or out of the image and comes back in the camera field of view. \rox{} allows the user to identify the target by choosing several identification methods. The methods are detailed in section~\ref{sec:ident}. See the example ``rox\_example\_odometry\_single\_plane.c'' for odometry with identification using a textured image and ``rox\_example\_odometry\_single\_plane\_database.c'' for odometry with identification using a database of textured images.
+
+If the user needs a very robust identification we recommend to use a
+photoframe around the target. Section \ref{sse:ident_photoframe}
+describes how to build photoframes and use them for target
+identification.  See the example ``rox\_example\_odometry\_single\_plane\_photoframe.c'' for an
+example of use with the odometry.
+
+% \input{odometry/rox_example_odometry.tex}
+% \input{odometry/rox_example_odometry_photoframe.tex}

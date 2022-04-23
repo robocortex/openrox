@@ -1,0 +1,20 @@
+\section{License}
+\label{sec:license}
+
+\subsection{License activation using a file}
+\label{sse:license_activation_file}
+The user can activate the \rox{} license by providing a license file to the following function:
+
+\begin{lstlisting}
+Rox_Error rox_license_activate_file (const char *filename);
+\end{lstlisting}
+
+\subsection{License activation using a serial number}
+\label{sse:license_activation_serial_number}
+The user can activate the \rox{} license by providing a serial number to the following function:
+
+\begin{lstlisting}
+Rox_Error rox_license_activate_serial_number (const Rox_Uint *serial_number);
+\end{lstlisting}
+
+Important remark: this mode is mandatory if the the dynamic libraries of \rox{} are distributed.

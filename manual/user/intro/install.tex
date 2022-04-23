@@ -1,0 +1,31 @@
+\section{Quick guide}
+\label{sec:install}
+
+\noindent In the directory \roxdir{}, you will find the following directories:
+
+\begin{itemize}
+  \item bin~: The directory containing the dynamic libraries and used to build the executable examples. By default, the license file shall be copied to this directory.
+  \item doc~: The directory containing the documentation~;
+  \item inc~: The directory containing the headers for the various structures and functions~;
+  \item lib~: The directory containing the static libraries~;
+  \item lic~: The directory containing the license file~;
+  \item res~: Directory needed to save example results~;
+  \item seq~: The directory containing the sequence of images (.pgm files) used to test the applications. More test sequences can be downloaded from Robocortex website at www.robocortex.com. Instructions are given in eache example file;
+  \item src~: Directory containing several examples for using \rox{}. Examples are provided to test the library and commented in order to
+help the user understand how to use and make his own application.;
+\end{itemize}
+
+\noindent To compile the examples go to the bin directory:
+\begin{lstlisting}
+cd bin
+\end{lstlisting}
+then use cmake-gui (can be downloaded from http://www.cmake.org/) to generate the platform specific projects to compile the examples: 
+\begin{lstlisting}
+cmake-gui ..
+\end{lstlisting}
+Make sure that cmake-gui is added to the system PATH. 
+
+\section{License file}
+\label{sec:license_file}
+
+A license file shall be obtained to use \rox{} and run the example. By default, the license file shall be copied to the "lic" directory. The user can put the file in a different directory by changing the path in the example files.

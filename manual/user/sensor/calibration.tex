@@ -1,0 +1,77 @@
+\subsection{Camera Calibration}
+\label{sse:camera_calibration}
+
+\noindent Camera calibration consists in finding the intrinsic parameters of the following matrix (see section~\ref{sec:camera}):
+
+\begin{equation}
+\bf{K} = \left[ \begin{array}{ccc} f & s & c_u \\ 0 & f r & c_v \\ 0 & 0 & 1 \end{array} \right]
+\end{equation}
+
+\noindent This tedious procedure is extremely easy with \rox{}.
+
+\noindent The user can print or display on his screen any image with sufficient texture. After measuring the size of the rectangle the user can go through the following work-flow for camera calibration: 
+
+\begin{itemize}
+\item create a new calibration object using a 2D model with known size:
+
+\begin{lstlisting}
+Rox_Error rox_texture_calibration_mono_perspective_new(Rox_Texture_Calibration_Mono_Perspective *calibration, Rox_Model_2D model);
+\end{lstlisting}
+
+The size of the printed texture is given in meters.
+
+\item add a calibration image:
+ 
+\begin{lstlisting}
+Rox_Error rox_texture_calibration_mono_perspective_add_image(Rox_Texture_Calibration_Mono_Perspective calibration, Rox_Image image);
+\end{lstlisting}
+
+The user shall add images (up to 20) taken with the camera and viewing
+the same texture from different point of views. An inclination between
+30 and 45 degrees relative to the normal to the texture plane wil
+give good results. For optimal results, the texture in the current
+image should have almost the ssame size of the model image. The more
+images are added, the more camera intrinsic parameters ca be
+calibrated (see the ``method'' parameter below).
+
+\item make the camera calibration:
+ 
+\begin{lstlisting}
+Rox_Error rox_texture_calibration_mono_perspective_make(Rox_Texture_Calibration_Mono_Perspective calibration, Rox_Uint method);
+\end{lstlisting}
+
+The user can choose the ``method'' parameter (between 1 and 5) to calibrate the following camera parameters:
+
+\begin{enumerate}
+\item method = 1 : calibrate the focal length $f$ only (assuming the
+  principal point $c_u$, $c_v$ are at the center of the image). This
+  method needs only 1 image in which the texture model is not observed
+  fronto-parallel to the 3D plane.
+\item method = 2 : calibrate the focal length $f$ and aspect ration $r$
+  (assuming the principal point $c_u$, $c_v$ are at the center of the
+  image). This method needs only 1 image in which the texture model is
+  not observed fronto-parallel to the 3D plane.
+\item method = 3 : calibrate the focal length $f$ and the principal point $c_u$, $c_v$. This method needs at least 2 images in which the texture model is
+  not observed fronto-parallel to the 3D plane.
+\item method = 4 : calibrate the focal length $f$, aspect ration $r$
+  and the principal point $c_u$, $c_v$. This method needs at least 2
+  images in which the texture model is not observed fronto-parallel to
+  the 3D plane.
+\item method = 5 : calibrate the focal length $f$, aspect ration $r$, skew $s$
+  and the principal point $c_u$, $c_v$. This method needs at least 3
+  images in which the texture model is not observed fronto-parallel to
+  the 3D plane.
+\end{enumerate}
+
+Use the method number 4 when calibrating the camera for computing the odometry with \rox{}.
+
+\item get the camera calibration:
+
+\begin{lstlisting}
+Rox_Error rox_texture_calibration_mono_perspective_get_intrinsics(Rox_Matrix intrinsics, Rox_Texture_Calibration_Mono_Perspective calibration);
+\end{lstlisting}
+
+The camera intrinsic parameters are written in a 3x3 matrix.
+\end{itemize}
+
+See the example ``rox\_example\_camera\_calibration.c'' for an example of camera calibration.

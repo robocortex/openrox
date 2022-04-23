@@ -1,0 +1,62 @@
+\section{Image Display}
+\label{sec:idisp}
+
+The image display module contains structures and methods for displaing results on images and saving on disk. 
+
+\subsection{The object {\tt Rox\_Image\_Display}}
+\label{sse:idisp_object}
+
+An image display object can be declared using the pointer to a \lstinline$Rox_Image_Display_Struct$ structure. 
+\begin{lstlisting}
+typedef struct Rox_Image_Display_Struct* Rox_Image_Display;
+\end{lstlisting}
+
+\subsection{Creating/Deleting a {\tt Rox\_Image\_Display}}
+\label{sse:idisp_newdel}
+
+Functions are provided to allocate and deallocate a \lstinline$Rox_Image_Display$ object~:
+
+\begin{lstlisting}
+Rox_Error rox_image_display_new (Rox_Image_Display *image, Rox_Uint cols, Rox_Uint rows);
+\end{lstlisting}
+
+The function allocates memory for data depending parameters  `cols' and `rows' which correspond to image size.\\
+
+\begin{lstlisting}
+Rox_Error rox_image_display_del (Rox_Image_Display *image);
+\end{lstlisting}
+
+The function deallocates memory for a \lstinline$Rox_Image_Display$ object. It is necessary to call this function when the
+structure is not used anymore.
+
+\subsection{Main functions related to {\tt Rox\_Image\_Display}}
+\label{sse:idisp_functs}
+
+An image can be read from a PGM or PPM file if the size is compatible using the following functions:
+
+\begin{lstlisting}
+Rox_Error rox_image_display_readpgm (Rox_Image_Display image, const char *filename);
+\end{lstlisting}
+
+\begin{lstlisting}
+Rox_Error rox_image_display_readppm (Rox_Image_Display image, const char *filename);
+\end{lstlisting}
+
+After drawing the results, the image can be saved on disk using the following functions:
+
+\begin{lstlisting}
+Rox_Error rox_image_display_savepgm (const char *filename, Rox_Image_Display image);
+\end{lstlisting}
+
+\begin{lstlisting}
+Rox_Error rox_image_display_saveppm (const char *filename, Rox_Image_Display image);
+\end{lstlisting}
+
+The results of odometry computation can be drwan using the following functions:
+\begin{lstlisting}
+Rox_Error rox_image_display_draw_projection_model_single_plane (Rox_Image_Display image, Rox_Matrix calib, Rox_MatSE3 pose, Rox_Model_Single_Plane model, Rox_Uint color);
+\end{lstlisting}
+
+\begin{lstlisting}
+Rox_Error rox_image_display_draw_projection_model_multi_plane (Rox_Image_Display image, Rox_Matrix calib, Rox_MatSE3 pose, Rox_Model_Multi_Plane model, Rox_Uint color);
+\end{lstlisting}

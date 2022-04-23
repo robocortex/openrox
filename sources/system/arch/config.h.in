@@ -1,0 +1,35 @@
+//============================================================================
+//
+//    OPENROX   : File config.h
+//
+//    Contents  : API of config module
+//
+//    Author(s) : R&D department directed by Ezio MALIS
+//
+//    Copyright : 2022 Robocortex S.A.S.
+//
+//    License   : LGPL v3 or commercial license
+//
+//============================================================================
+
+#ifndef ROX_EXPORT
+#if defined(_MSC_VER)
+#define ROX_EXPORT __declspec(dllexport)
+#elif (defined __GNUC__) && (__GNUC__ >= 4)
+#define ROX_EXPORT __attribute__((visibility("default")))
+#else
+#define ROX_EXPORT
+#endif
+#endif
+
+#ifndef ROX_EXTERN_C
+#ifdef __cplusplus
+#define ROX_EXTERN_C extern "C"
+#else
+#define ROX_EXTERN_C
+#endif
+
+#endif
+#ifndef ROX_API
+   #define ROX_API @ROX_API@
+#endif

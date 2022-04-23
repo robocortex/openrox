@@ -1,0 +1,28 @@
+SET ( CMAKE_SYSTEM_NAME      Linux         )
+SET ( CMAKE_SYSTEM_VERSION   1             )
+SET ( CMAKE_SYSTEM_PROCESSOR arm-gnueabihf )
+SET ( CMAKE_CROSSCOMPILING   1             )
+
+INCLUDE( CMakeForceCompiler )
+
+SET ( SDKROOT   "/usr/arm-linux-gnueabihf/" )
+SET ( TOOLSROOT "/usr/bin/"                 )
+SET ( SYSROOT   $ENV{OPENROX_ODROID_HOME}       )
+
+CMAKE_FORCE_C_COMPILER(   "${TOOLSROOT}/arm-linux-gnueabihf-gcc" GNU )
+CMAKE_FORCE_CXX_COMPILER( "${TOOLSROOT}/arm-linux-gnueabihf-g++" GNU )
+
+SET ( CMAKE_C_FLAGS             "--sysroot=${SYSROOT}" )
+SET ( CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-undefined"   )
+SET ( CMAKE_FIND_ROOT_PATH      ${SYSROOT}             )
+
+INCLUDE_DIRECTORIES( SYSTEM "${SDKROOT}/include" )
+
+SET ( CMAKE_FIND_ROOT_PATH  ${SDKROOT} $ENV{OPENROX_HOME} ${SYSROOT} )
+SET ( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH )
+SET ( CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY )
+SET ( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY )
+
+SET ( IS_ODROID 1 )
+SET ( NO_OPENGL 1 )
+SET ( NO_CERES  1 )

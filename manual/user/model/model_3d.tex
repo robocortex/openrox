@@ -1,0 +1,44 @@
+\section{Model Multi Plane}
+\label{sec:model_multi_plane}
+The present version of \rox{} allows the user to define simple 3D objects only.
+Currently, the 3D object is described as a set of 3D quadrilaterals (e.g. : the 6 
+faces of a cube or parts of the faces). Each quadrilateral is defined by an image 
+texture and four 3D points associated to each corner of the texture (order : Top left -> Top
+right -> Bottom right -> Bottom left). The 3D vertices of all faces shall be defined 
+in a common reference frame $\mathcal{F}_{r}$. Be sure to define your 3D coordinates 
+as precisely as possible. It is up to the user to choose the adequate $\mathcal{F}_{r}$ for your vertices.
+The default pose estimated by the odometry is the 3D transformation 
+(rotation and translation) from this reference frame to the camera frame. 
+
+\subsection{The {\tt Rox\_Model\_Multi\_Plane} object}
+\label{sse:model_multi_plane_struct}
+A model 3D object is a pointer to the opaque structure \lstinline$Rox_Model_Multi\_Plane_Struct$: 
+
+\begin{lstlisting}
+typedef struct Rox_Model_Multi\_Plane_Struct* Rox_Model_Multi\_Plane;
+\end{lstlisting}
+
+The structure is opaque to the user and can only be accessed through constructors, destructors and methods described in the following sections.
+
+\subsection{Creating/Deleting a {\tt Rox\_Model\_Multi\_Plane}}
+\label{sse:model_multi_plane_newdel}
+
+Functions are provided to allocate, initialize and deallocate an \lstinline$Rox_Model_Multi\_Plane$ object~:
+\begin{lstlisting}
+Rox_Error rox_model_multi_plane_new(Rox_Model_Multi\_Plane * model_multi_plane);
+\end{lstlisting}
+The \lstinline$rox_model_multi_plane_new$ function allocates memory for data. \\ 
+
+\begin{lstlisting}
+Rox_Error rox_model_multi_plane_del(Rox_Model_Multi\_Plane * model_multi_plane);
+\end{lstlisting}
+The \lstinline$rox_model_multi_plane_del$ function deallocates memory for an \lstinline$Rox_Model_Multi_Plane$ structure. It is necessary to call this function when the
+structure is not used any more or before overwriting it.
+
+\subsection{Main functions related to {\tt Rox\_Model\_Multi\_Plane}}
+\label{sse:model_multi_plane_functs}
+
+The main function related to the \lstinline$Rox_Model_Multi_Plane$ is the function that allows to define an additional textured quadrilateral belonging to the 3D object:
+\begin{lstlisting}
+Rox_Error rox_model_multi_plane_append_plane(Rox_Model_Multi_Plane model, Rox_Image image, Rox_Real vertices[4])
+\end{lstlisting}

@@ -1,0 +1,136 @@
+\chapter{Motion Detection Module}
+\label{cha:motion_detection}
+
+Visual motion detection is the process of determining the changes
+occurring in a sequence of images relative to a given reference
+image. If the camera is static, these changes are mainly due to moving
+objects. The localization of moving objects in the image is used in
+several applications such as robotics, active video-surveillance, and many
+others.
+
+In \rox{}, the detection of a moving target is done inside an
+appropriate Region Of Interest (ROI) selected by the user. In the
+current version of \rox{} the image is supposed to be acquired by a
+static camera.
+
+The Detection module contains the following sub-modules:
+
+\begin{description}
+\item[Detection Parameters]~: module with structures and methods for handling the detection parameters~;
+\item[Detection]~: module with structures and methods for motion detection ~;
+\end{description}
+
+\input{detection/detection_params.tex}
+
+\section{Detection}
+\label{sec:detetion}
+
+\subsection{The Rox\_Detection object}
+\label{sse:detection_object}
+
+A \lstinline$Rox_Detection$ object can be defined using the pointer to a \lstinline$Rox_Detection_Structure$:
+\begin{lstlisting}
+typedef struct Rox_Detection_Struct* Rox_Detection;
+\end{lstlisting}
+
+\subsection{Creating/Deleting a Rox\_Detection object}
+\label{sss:detection_initializing}
+
+Functions are provided to allocate and deallocate a \lstinline$Rox_Detection$ structure~:
+\begin{lstlisting}
+Rox_Detection rox_detection_new(Rox_Detection_Params detection_params, Rox_Image image);
+\end{lstlisting}
+The \lstinline$rox_detection_new$ function allocates memory for the structure of the motion detection, according to
+the \lstinline$detection_params$ object and returns a pointer on the newly created structure. The input image corresponds to the model image (background) used for the motion detection. \\
+
+\begin{lstlisting}
+Rox_Void rox_detection_del(Rox_Detection detection);
+\end{lstlisting}
+The \lstinline$rox_detection_del$ function deallocates memory for a \lstinline$Rox_Detection$ structure. 
+It is necessary to call this function when the structure is not used anymore or before overwriting it. 
+Remember to set \lstinline$detection = NULL;$ after deleting the object.
+\\
+
+The \lstinline$Rox_Detection$ structure is opaque, i.e. its internal
+fields are hidden and cannot be accessed directly by the user. A
+consequence is that the user can only declare and manipulate pointer
+on this structure, and never the structure itself, as the size of the
+structure is unknown to the user.\\
+
+In order to detect moving objects in several ROI, the user can declare and create
+several \lstinline$Rox_Detection$ structures and perform the algorithm on each of
+them. \\
+
+\subsection{The main functions related to the object Rox\_Detection}
+\label{sss:detection_methods}
+
+Once the \lstinline$Rox_Detection$ is allocated and initialized, it is possible to:
+\begin{itemize}
+  \item Set a different model image
+  \item Set an image mask to avoid detection in specific parts of the ROI
+  \item Set different parameters for each detection
+  \item Detect moving objects
+\end{itemize}
+
+\subsubsection{Setting a model image}
+\label{sse:detection_set_model}
+
+The function \lstinline$rox_detection_motion_set_model$ allows the
+user to set a model image which may be different from the model image
+chosen at initialization. This can be useful if the appearance of the
+model has changed. For example the detection may start in the morning
+and in the afternoon the lighting conditions have changed so much
+that it is preferable to renew the model image.\\
+
+\subsubsection{Setting an image mask}
+\label{sse:detection_set_imask}
+
+The following functions allow the user to set an image mask of any shape. This mask can be used to avoid
+detection in specific parts of the ROI. \\
+
+\paragraph{Setting an image mask from windows}
+\label{sss:detection_set_imask_windows}
+~\\
+The function \lstinline$rox_detection_set_imask_window$ shall be used
+to select a rectangular region defined by a window.
+
+The function \lstinline$rox_detection_motion_set_imask_window_list$ shall be used to select several rectangular regions defined by a window list.
+
+\paragraph{Setting an user defined image mask}
+\label{sss:detection_set_imask_user}
+~\\
+
+The function \lstinline$rox_detection_set_imask$ shall be used for defining such regions (for example a disc).\\
+Further information about image masks can be found in section \ref{sec:imask}. Detection can then be performed with
+\lstinline$rox_detection_make$ function.
+
+\subsubsection{Setting detection parameters}
+\label{sse:detection_set_params}
+
+The motion detection parameters (see section \ref{sec:detection_params}) can be modified for each image using the following functions:
+
+\lstinline$rox_detection_motion_set_bandwidth$
+
+\lstinline$rox_detection_motion_set_sensitivity$
+
+%\paragraph{Setting the size of the detected objetcs}
+%\label{sss:detection_set_bandwidth}
+
+%\paragraph{Setting the detection sensitivity}
+%\label{sss:detection_set_sensitivity}
+
+\subsubsection{Performing motion detection}
+\label{sss:detection_set_params}
+
+To perform the detection we call the \lstinline$rox_detection_make$
+function with the \lstinline$Rox_Detection$ structure and the image
+used to perform the detection as parameters. This function shall be
+called for each image of the sequence in which the user would like to
+detect a moving object.
+
+The output of the detection is a list of windows defining a bounding
+box around the moving object.
+
+See the example ``rox\_example\_detection.tex'' for an example of use.
+
+%\input{detection/rox_example_detection}

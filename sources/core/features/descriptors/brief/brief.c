@@ -1,0 +1,118 @@
+//==============================================================================
+//
+//    OPENROX   : File brief.c
+//
+//    Contents  : Implementation of brief module
+//
+//    Author(s) : R&D department directed by Ezio MALIS
+//
+//    Copyright : 2022 Robocortex S.A.S.
+//
+//    License   : LGPL v3 or commercial license
+//
+//==============================================================================
+
+#include "brief.h"
+#include "brief_point_struct.h"
+#include "generated/dynvec_segment_point_struct.h"
+
+#include <baseproc/array/integral/integralsum.h>
+#include <baseproc/array/integral/integralaccess.h>
+#include <inout/system/errors_print.h>
+
+#define BRIEF_FILTER_RADIUS 4
+#define BRIEF_FILTER_DIAMETER 9
+
+//#define rox_array2d_uint_integralaccess(integral, x, y, w, h) ((Rox_Sint)integral[y + h - 1][x + w - 1] + (Rox_Sint)integral[y - 1][x - 1] - (Rox_Sint)integral[y - 1][x + w - 1] - (Rox_Sint)integral[y + h - 1][x - 1])
+//#define SMOOTHED(Y,X) rox_array2d_uint_integralaccess(ds, u + X - BRIEF_FILTER_RADIUS, v + Y - BRIEF_FILTER_RADIUS, BRIEF_FILTER_DIAMETER, BRIEF_FILTER_DIAMETER)
+
+Rox_Sint rox_array2d_uint_integralaccess_func(Rox_Uint ** integral, Rox_Sint x, Rox_Sint y, Rox_Sint w, Rox_Sint h)
+{
+	return ((Rox_Sint)integral[y + h - 1][x + w - 1] + (Rox_Sint)integral[y - 1][x - 1] - (Rox_Sint)integral[y - 1][x + w - 1] - (Rox_Sint)integral[y + h - 1][x - 1]);
+}
+
+Rox_Sint smoothed_func(Rox_Uint ** ds, Rox_Uint u, Rox_Uint v, Rox_Sint Y, Rox_Sint X)
+{
+	return rox_array2d_uint_integralaccess_func(ds, u + X - BRIEF_FILTER_RADIUS, v + Y - BRIEF_FILTER_RADIUS, BRIEF_FILTER_DIAMETER, BRIEF_FILTER_DIAMETER);
+}
+
+Rox_ErrorCode rox_brief_points_compute(Rox_DynVec_Brief_Point obj, const Rox_Image source, Rox_DynVec_Segment_Point points)
+{
+    Rox_ErrorCode error = ROX_ERROR_NONE;
+    Rox_Array2D_Uint integral = NULL;
+
+    if (!obj) 
+    { error = ROX_ERROR_NULL_POINTER; ROX_ERROR_CHECK_TERMINATE ( error ); }
+    
+    Rox_Sint cols = 0, rows = 0;
+    error = rox_array2d_uchar_get_size(&rows, &cols, source); 
+    ROX_ERROR_CHECK_TERMINATE ( error );
+
+    error = rox_array2d_uint_new(&integral, rows, cols);
+    ROX_ERROR_CHECK_TERMINATE ( error );
+
+    rox_dynvec_brief_point_reset(obj);
+
+    error = rox_array2d_uchar_integralsum(integral, source);
+    ROX_ERROR_CHECK_TERMINATE ( error );
+
+    Rox_Uint ** ds = NULL;
+    error = rox_array2d_uint_get_data_pointer_to_pointer(&ds, integral);
+    ROX_ERROR_CHECK_TERMINATE ( error );
+
+    for (Rox_Uint id = 0; id < points->used; id++)
+    {
+        Rox_Brief_Point_Struct pt;
+
+        Rox_Uint u = points->data[id].j;
+        Rox_Uint v = points->data[id].i;
+
+        if (u < 28 || v < 28) continue;
+        if (u >= (Rox_Uint) (cols - 28) || v >= (Rox_Uint) (rows - 28)) continue;
+
+        pt.u = u;
+        pt.v = v;
+
+		pt.description[0] = (Rox_Uchar)(((smoothed_func(ds, u, v, -2, -1) < smoothed_func(ds, u, v, 7, -1)) << 7) + ((smoothed_func(ds, u, v, -14, -1) < smoothed_func(ds, u, v, -3, 3)) << 6) + ((smoothed_func(ds, u, v, 1, -2) < smoothed_func(ds, u, v, 11, 2)) << 5) + ((smoothed_func(ds, u, v, 1, 6) < smoothed_func(ds, u, v, -10, -7)) << 4) + ((smoothed_func(ds, u, v, 13, 2) < smoothed_func(ds, u, v, -1, 0)) << 3) + ((smoothed_func(ds, u, v, -14, 5) < smoothed_func(ds, u, v, 5, -3)) << 2) + ((smoothed_func(ds, u, v, -2, 8) < smoothed_func(ds, u, v, 2, 4)) << 1) + ((smoothed_func(ds, u, v, -11, 8) < smoothed_func(ds, u, v, -15, 5)) << 0));
+		pt.description[1] = (Rox_Uchar)(((smoothed_func(ds, u, v, -6, -23) < smoothed_func(ds, u, v, 8, -9)) << 7) + ((smoothed_func(ds, u, v, -12, 6) < smoothed_func(ds, u, v, -10, 8)) << 6) + ((smoothed_func(ds, u, v, -3, -1) < smoothed_func(ds, u, v, 8, 1)) << 5) + ((smoothed_func(ds, u, v, 3, 6) < smoothed_func(ds, u, v, 5, 6)) << 4) + ((smoothed_func(ds, u, v, -7, -6) < smoothed_func(ds, u, v, 5, -5)) << 3) + ((smoothed_func(ds, u, v, 22, -2) < smoothed_func(ds, u, v, -11, -8)) << 2) + ((smoothed_func(ds, u, v, 14, 7) < smoothed_func(ds, u, v, 8, 5)) << 1) + ((smoothed_func(ds, u, v, -1, 14) < smoothed_func(ds, u, v, -5, -14)) << 0));
+		pt.description[2] = (Rox_Uchar)(((smoothed_func(ds, u, v, -14, 9) < smoothed_func(ds, u, v, 2, 0)) << 7) + ((smoothed_func(ds, u, v, 7, -3) < smoothed_func(ds, u, v, 22, 6)) << 6) + ((smoothed_func(ds, u, v, -6, 6) < smoothed_func(ds, u, v, -8, -5)) << 5) + ((smoothed_func(ds, u, v, -5, 9) < smoothed_func(ds, u, v, 7, -1)) << 4) + ((smoothed_func(ds, u, v, -3, -7) < smoothed_func(ds, u, v, -10, -18)) << 3) + ((smoothed_func(ds, u, v, 4, -5) < smoothed_func(ds, u, v, 0, 11)) << 2) + ((smoothed_func(ds, u, v, 2, 3) < smoothed_func(ds, u, v, 9, 10)) << 1) + ((smoothed_func(ds, u, v, -10, 3) < smoothed_func(ds, u, v, 4, 9)) << 0));
+		pt.description[3] = (Rox_Uchar)(((smoothed_func(ds, u, v, 0, 12) < smoothed_func(ds, u, v, -3, 19)) << 7) + ((smoothed_func(ds, u, v, 1, 15) < smoothed_func(ds, u, v, -11, -5)) << 6) + ((smoothed_func(ds, u, v, 14, -1) < smoothed_func(ds, u, v, 7, 8)) << 5) + ((smoothed_func(ds, u, v, 7, -23) < smoothed_func(ds, u, v, -5, 5)) << 4) + ((smoothed_func(ds, u, v, 0, -6) < smoothed_func(ds, u, v, -10, 17)) << 3) + ((smoothed_func(ds, u, v, 13, -4) < smoothed_func(ds, u, v, -3, -4)) << 2) + ((smoothed_func(ds, u, v, -12, 1) < smoothed_func(ds, u, v, -12, 2)) << 1) + ((smoothed_func(ds, u, v, 0, 8) < smoothed_func(ds, u, v, 3, 22)) << 0));
+		pt.description[4] = (Rox_Uchar)(((smoothed_func(ds, u, v, -13, 13) < smoothed_func(ds, u, v, 3, -1)) << 7) + ((smoothed_func(ds, u, v, -16, 17) < smoothed_func(ds, u, v, 6, 10)) << 6) + ((smoothed_func(ds, u, v, 7, 15) < smoothed_func(ds, u, v, -5, 0)) << 5) + ((smoothed_func(ds, u, v, 2, -12) < smoothed_func(ds, u, v, 19, -2)) << 4) + ((smoothed_func(ds, u, v, 3, -6) < smoothed_func(ds, u, v, -4, -15)) << 3) + ((smoothed_func(ds, u, v, 8, 3) < smoothed_func(ds, u, v, 0, 14)) << 2) + ((smoothed_func(ds, u, v, 4, -11) < smoothed_func(ds, u, v, 5, 5)) << 1) + ((smoothed_func(ds, u, v, 11, -7) < smoothed_func(ds, u, v, 7, 1)) << 0));
+		pt.description[5] = (Rox_Uchar)(((smoothed_func(ds, u, v, 6, 12) < smoothed_func(ds, u, v, 21, 3)) << 7) + ((smoothed_func(ds, u, v, -3, 2) < smoothed_func(ds, u, v, 14, 1)) << 6) + ((smoothed_func(ds, u, v, 5, 1) < smoothed_func(ds, u, v, -5, 11)) << 5) + ((smoothed_func(ds, u, v, 3, -17) < smoothed_func(ds, u, v, -6, 2)) << 4) + ((smoothed_func(ds, u, v, 6, 8) < smoothed_func(ds, u, v, 5, -10)) << 3) + ((smoothed_func(ds, u, v, -14, -2) < smoothed_func(ds, u, v, 0, 4)) << 2) + ((smoothed_func(ds, u, v, 5, -7) < smoothed_func(ds, u, v, -6, 5)) << 1) + ((smoothed_func(ds, u, v, 10, 4) < smoothed_func(ds, u, v, 4, -7)) << 0));
+		pt.description[6] = (Rox_Uchar)(((smoothed_func(ds, u, v, 22, 0) < smoothed_func(ds, u, v, 7, -18)) << 7) + ((smoothed_func(ds, u, v, -1, -3) < smoothed_func(ds, u, v, 0, 18)) << 6) + ((smoothed_func(ds, u, v, -4, 22) < smoothed_func(ds, u, v, -5, 3)) << 5) + ((smoothed_func(ds, u, v, 1, -7) < smoothed_func(ds, u, v, 2, -3)) << 4) + ((smoothed_func(ds, u, v, 19, -20) < smoothed_func(ds, u, v, 17, -2)) << 3) + ((smoothed_func(ds, u, v, 3, -10) < smoothed_func(ds, u, v, -8, 24)) << 2) + ((smoothed_func(ds, u, v, -5, -14) < smoothed_func(ds, u, v, 7, 5)) << 1) + ((smoothed_func(ds, u, v, -2, 12) < smoothed_func(ds, u, v, -4, -15)) << 0));
+		pt.description[7] = (Rox_Uchar)(((smoothed_func(ds, u, v, 4, 12) < smoothed_func(ds, u, v, 0, -19)) << 7) + ((smoothed_func(ds, u, v, 20, 13) < smoothed_func(ds, u, v, 3, 5)) << 6) + ((smoothed_func(ds, u, v, -8, -12) < smoothed_func(ds, u, v, 5, 0)) << 5) + ((smoothed_func(ds, u, v, -5, 6) < smoothed_func(ds, u, v, -7, -11)) << 4) + ((smoothed_func(ds, u, v, 6, -11) < smoothed_func(ds, u, v, -3, -22)) << 3) + ((smoothed_func(ds, u, v, 15, 4) < smoothed_func(ds, u, v, 10, 1)) << 2) + ((smoothed_func(ds, u, v, -7, -4) < smoothed_func(ds, u, v, 15, -6)) << 1) + ((smoothed_func(ds, u, v, 5, 10) < smoothed_func(ds, u, v, 0, 24)) << 0));
+		pt.description[8] = (Rox_Uchar)(((smoothed_func(ds, u, v, 3, 6) < smoothed_func(ds, u, v, 22, -2)) << 7) + ((smoothed_func(ds, u, v, -13, 14) < smoothed_func(ds, u, v, 4, -4)) << 6) + ((smoothed_func(ds, u, v, -13, 8) < smoothed_func(ds, u, v, -18, -22)) << 5) + ((smoothed_func(ds, u, v, -1, -1) < smoothed_func(ds, u, v, -7, 3)) << 4) + ((smoothed_func(ds, u, v, -19, -12) < smoothed_func(ds, u, v, 4, 3)) << 3) + ((smoothed_func(ds, u, v, 8, 10) < smoothed_func(ds, u, v, 13, -2)) << 2) + ((smoothed_func(ds, u, v, -6, -1) < smoothed_func(ds, u, v, -6, -5)) << 1) + ((smoothed_func(ds, u, v, 2, -21) < smoothed_func(ds, u, v, -3, 2)) << 0));
+		pt.description[9] = (Rox_Uchar)(((smoothed_func(ds, u, v, 4, -7) < smoothed_func(ds, u, v, 0, 16)) << 7) + ((smoothed_func(ds, u, v, -6, -5) < smoothed_func(ds, u, v, -12, -1)) << 6) + ((smoothed_func(ds, u, v, 1, -1) < smoothed_func(ds, u, v, 9, 18)) << 5) + ((smoothed_func(ds, u, v, -7, 10) < smoothed_func(ds, u, v, -11, 6)) << 4) + ((smoothed_func(ds, u, v, 4, 3) < smoothed_func(ds, u, v, 19, -7)) << 3) + ((smoothed_func(ds, u, v, -18, 5) < smoothed_func(ds, u, v, -4, 5)) << 2) + ((smoothed_func(ds, u, v, 4, 0) < smoothed_func(ds, u, v, -20, 4)) << 1) + ((smoothed_func(ds, u, v, 7, -11) < smoothed_func(ds, u, v, 18, 12)) << 0));
+		pt.description[10] = (Rox_Uchar)(((smoothed_func(ds, u, v, -20, 17) < smoothed_func(ds, u, v, -18, 7)) << 7) + ((smoothed_func(ds, u, v, 2, 15) < smoothed_func(ds, u, v, 19, -11)) << 6) + ((smoothed_func(ds, u, v, -18, 6) < smoothed_func(ds, u, v, -7, 3)) << 5) + ((smoothed_func(ds, u, v, -4, 1) < smoothed_func(ds, u, v, -14, 13)) << 4) + ((smoothed_func(ds, u, v, 17, 3) < smoothed_func(ds, u, v, 2, -8)) << 3) + ((smoothed_func(ds, u, v, -7, 2) < smoothed_func(ds, u, v, 1, 6)) << 2) + ((smoothed_func(ds, u, v, 17, -9) < smoothed_func(ds, u, v, -2, 8)) << 1) + ((smoothed_func(ds, u, v, -8, -6) < smoothed_func(ds, u, v, -1, 12)) << 0));
+		pt.description[11] = (Rox_Uchar)(((smoothed_func(ds, u, v, -2, 4) < smoothed_func(ds, u, v, -1, 6)) << 7) + ((smoothed_func(ds, u, v, -2, 7) < smoothed_func(ds, u, v, 6, 8)) << 6) + ((smoothed_func(ds, u, v, -8, -1) < smoothed_func(ds, u, v, -7, -9)) << 5) + ((smoothed_func(ds, u, v, 8, -9) < smoothed_func(ds, u, v, 15, 0)) << 4) + ((smoothed_func(ds, u, v, 0, 22) < smoothed_func(ds, u, v, -4, -15)) << 3) + ((smoothed_func(ds, u, v, -14, -1) < smoothed_func(ds, u, v, 3, -2)) << 2) + ((smoothed_func(ds, u, v, -7, -4) < smoothed_func(ds, u, v, 17, -7)) << 1) + ((smoothed_func(ds, u, v, -8, -2) < smoothed_func(ds, u, v, 9, -4)) << 0));
+		pt.description[12] = (Rox_Uchar)(((smoothed_func(ds, u, v, 5, -7) < smoothed_func(ds, u, v, 7, 7)) << 7) + ((smoothed_func(ds, u, v, -5, 13) < smoothed_func(ds, u, v, -8, 11)) << 6) + ((smoothed_func(ds, u, v, 11, -4) < smoothed_func(ds, u, v, 0, 8)) << 5) + ((smoothed_func(ds, u, v, 5, -11) < smoothed_func(ds, u, v, -9, -6)) << 4) + ((smoothed_func(ds, u, v, 2, -6) < smoothed_func(ds, u, v, 3, -20)) << 3) + ((smoothed_func(ds, u, v, -6, 2) < smoothed_func(ds, u, v, 6, 10)) << 2) + ((smoothed_func(ds, u, v, -6, -6) < smoothed_func(ds, u, v, -15, 7)) << 1) + ((smoothed_func(ds, u, v, -6, -3) < smoothed_func(ds, u, v, 2, 1)) << 0));
+		pt.description[13] = (Rox_Uchar)(((smoothed_func(ds, u, v, 11, 0) < smoothed_func(ds, u, v, -3, 2)) << 7) + ((smoothed_func(ds, u, v, 7, -12) < smoothed_func(ds, u, v, 14, 5)) << 6) + ((smoothed_func(ds, u, v, 0, -7) < smoothed_func(ds, u, v, -1, -1)) << 5) + ((smoothed_func(ds, u, v, -16, 0) < smoothed_func(ds, u, v, 6, 8)) << 4) + ((smoothed_func(ds, u, v, 22, 11) < smoothed_func(ds, u, v, 0, -3)) << 3) + ((smoothed_func(ds, u, v, 19, 0) < smoothed_func(ds, u, v, 5, -17)) << 2) + ((smoothed_func(ds, u, v, -23, -14) < smoothed_func(ds, u, v, -13, -19)) << 1) + ((smoothed_func(ds, u, v, -8, 10) < smoothed_func(ds, u, v, -11, -2)) << 0));
+		pt.description[14] = (Rox_Uchar)(((smoothed_func(ds, u, v, -11, 6) < smoothed_func(ds, u, v, -10, 13)) << 7) + ((smoothed_func(ds, u, v, 1, -7) < smoothed_func(ds, u, v, 14, 0)) << 6) + ((smoothed_func(ds, u, v, -12, 1) < smoothed_func(ds, u, v, -5, -5)) << 5) + ((smoothed_func(ds, u, v, 4, 7) < smoothed_func(ds, u, v, 8, -1)) << 4) + ((smoothed_func(ds, u, v, -1, -5) < smoothed_func(ds, u, v, 15, 2)) << 3) + ((smoothed_func(ds, u, v, -3, -1) < smoothed_func(ds, u, v, 7, -10)) << 2) + ((smoothed_func(ds, u, v, 3, -6) < smoothed_func(ds, u, v, 10, -18)) << 1) + ((smoothed_func(ds, u, v, -7, -13) < smoothed_func(ds, u, v, -13, 10)) << 0));
+		pt.description[15] = (Rox_Uchar)(((smoothed_func(ds, u, v, 1, -1) < smoothed_func(ds, u, v, 13, -10)) << 7) + ((smoothed_func(ds, u, v, -19, 14) < smoothed_func(ds, u, v, 8, -14)) << 6) + ((smoothed_func(ds, u, v, -4, -13) < smoothed_func(ds, u, v, 7, 1)) << 5) + ((smoothed_func(ds, u, v, 1, -2) < smoothed_func(ds, u, v, 12, -7)) << 4) + ((smoothed_func(ds, u, v, 3, -5) < smoothed_func(ds, u, v, 1, -5)) << 3) + ((smoothed_func(ds, u, v, -2, -2) < smoothed_func(ds, u, v, 8, -10)) << 2) + ((smoothed_func(ds, u, v, 2, 14) < smoothed_func(ds, u, v, 8, 7)) << 1) + ((smoothed_func(ds, u, v, 3, 9) < smoothed_func(ds, u, v, 8, 2)) << 0));
+		pt.description[16] = (Rox_Uchar)(((smoothed_func(ds, u, v, -9, 1) < smoothed_func(ds, u, v, -18, 0)) << 7) + ((smoothed_func(ds, u, v, 4, 0) < smoothed_func(ds, u, v, 1, 12)) << 6) + ((smoothed_func(ds, u, v, 0, 9) < smoothed_func(ds, u, v, -14, -10)) << 5) + ((smoothed_func(ds, u, v, -13, -9) < smoothed_func(ds, u, v, -2, 6)) << 4) + ((smoothed_func(ds, u, v, 1, 5) < smoothed_func(ds, u, v, 10, 10)) << 3) + ((smoothed_func(ds, u, v, -3, -6) < smoothed_func(ds, u, v, -16, -5)) << 2) + ((smoothed_func(ds, u, v, 11, 6) < smoothed_func(ds, u, v, -5, 0)) << 1) + ((smoothed_func(ds, u, v, -23, 10) < smoothed_func(ds, u, v, 1, 2)) << 0));
+		pt.description[17] = (Rox_Uchar)(((smoothed_func(ds, u, v, 13, -5) < smoothed_func(ds, u, v, -3, 9)) << 7) + ((smoothed_func(ds, u, v, -4, -1) < smoothed_func(ds, u, v, -13, -5)) << 6) + ((smoothed_func(ds, u, v, 10, 13) < smoothed_func(ds, u, v, -11, 8)) << 5) + ((smoothed_func(ds, u, v, 19, 20) < smoothed_func(ds, u, v, -9, 2)) << 4) + ((smoothed_func(ds, u, v, 4, -8) < smoothed_func(ds, u, v, 0, -9)) << 3) + ((smoothed_func(ds, u, v, -14, 10) < smoothed_func(ds, u, v, 15, 19)) << 2) + ((smoothed_func(ds, u, v, -14, -12) < smoothed_func(ds, u, v, -10, -3)) << 1) + ((smoothed_func(ds, u, v, -23, -3) < smoothed_func(ds, u, v, 17, -2)) << 0));
+		pt.description[18] = (Rox_Uchar)(((smoothed_func(ds, u, v, -3, -11) < smoothed_func(ds, u, v, 6, -14)) << 7) + ((smoothed_func(ds, u, v, 19, -2) < smoothed_func(ds, u, v, -4, 2)) << 6) + ((smoothed_func(ds, u, v, -5, 5) < smoothed_func(ds, u, v, 3, -13)) << 5) + ((smoothed_func(ds, u, v, 2, -2) < smoothed_func(ds, u, v, -5, 4)) << 4) + ((smoothed_func(ds, u, v, 17, 4) < smoothed_func(ds, u, v, 17, -11)) << 3) + ((smoothed_func(ds, u, v, -7, -2) < smoothed_func(ds, u, v, 1, 23)) << 2) + ((smoothed_func(ds, u, v, 8, 13) < smoothed_func(ds, u, v, 1, -16)) << 1) + ((smoothed_func(ds, u, v, -13, -5) < smoothed_func(ds, u, v, 1, -17)) << 0));
+		pt.description[19] = (Rox_Uchar)(((smoothed_func(ds, u, v, 4, 6) < smoothed_func(ds, u, v, -8, -3)) << 7) + ((smoothed_func(ds, u, v, -5, -9) < smoothed_func(ds, u, v, -2, -10)) << 6) + ((smoothed_func(ds, u, v, -9, 0) < smoothed_func(ds, u, v, -7, -2)) << 5) + ((smoothed_func(ds, u, v, 5, 0) < smoothed_func(ds, u, v, 5, 2)) << 4) + ((smoothed_func(ds, u, v, -4, -16) < smoothed_func(ds, u, v, 6, 3)) << 3) + ((smoothed_func(ds, u, v, 2, -15) < smoothed_func(ds, u, v, -2, 12)) << 2) + ((smoothed_func(ds, u, v, 4, -1) < smoothed_func(ds, u, v, 6, 2)) << 1) + ((smoothed_func(ds, u, v, 1, 1) < smoothed_func(ds, u, v, -2, -8)) << 0));
+		pt.description[20] = (Rox_Uchar)(((smoothed_func(ds, u, v, -2, 12) < smoothed_func(ds, u, v, -5, -2)) << 7) + ((smoothed_func(ds, u, v, -8, 8) < smoothed_func(ds, u, v, -9, 9)) << 6) + ((smoothed_func(ds, u, v, 2, -10) < smoothed_func(ds, u, v, 3, 1)) << 5) + ((smoothed_func(ds, u, v, -4, 10) < smoothed_func(ds, u, v, -9, 4)) << 4) + ((smoothed_func(ds, u, v, 6, 12) < smoothed_func(ds, u, v, 2, 5)) << 3) + ((smoothed_func(ds, u, v, -3, -8) < smoothed_func(ds, u, v, 0, 5)) << 2) + ((smoothed_func(ds, u, v, -13, 1) < smoothed_func(ds, u, v, -7, 2)) << 1) + ((smoothed_func(ds, u, v, -1, -10) < smoothed_func(ds, u, v, 7, -18)) << 0));
+		pt.description[21] = (Rox_Uchar)(((smoothed_func(ds, u, v, -1, 8) < smoothed_func(ds, u, v, -9, -10)) << 7) + ((smoothed_func(ds, u, v, -23, -1) < smoothed_func(ds, u, v, 6, 2)) << 6) + ((smoothed_func(ds, u, v, -5, -3) < smoothed_func(ds, u, v, 3, 2)) << 5) + ((smoothed_func(ds, u, v, 0, 11) < smoothed_func(ds, u, v, -4, -7)) << 4) + ((smoothed_func(ds, u, v, 15, 2) < smoothed_func(ds, u, v, -10, -3)) << 3) + ((smoothed_func(ds, u, v, -20, -8) < smoothed_func(ds, u, v, -13, 3)) << 2) + ((smoothed_func(ds, u, v, -19, -12) < smoothed_func(ds, u, v, 5, -11)) << 1) + ((smoothed_func(ds, u, v, -17, -13) < smoothed_func(ds, u, v, -3, 2)) << 0));
+		pt.description[22] = (Rox_Uchar)(((smoothed_func(ds, u, v, 7, 4) < smoothed_func(ds, u, v, -12, 0)) << 7) + ((smoothed_func(ds, u, v, 5, -1) < smoothed_func(ds, u, v, -14, -6)) << 6) + ((smoothed_func(ds, u, v, -4, 11) < smoothed_func(ds, u, v, 0, -4)) << 5) + ((smoothed_func(ds, u, v, 3, 10) < smoothed_func(ds, u, v, 7, -3)) << 4) + ((smoothed_func(ds, u, v, 13, 21) < smoothed_func(ds, u, v, -11, 6)) << 3) + ((smoothed_func(ds, u, v, -12, 24) < smoothed_func(ds, u, v, -7, -4)) << 2) + ((smoothed_func(ds, u, v, 4, 16) < smoothed_func(ds, u, v, 3, -14)) << 1) + ((smoothed_func(ds, u, v, -3, 5) < smoothed_func(ds, u, v, -7, -12)) << 0));
+		pt.description[23] = (Rox_Uchar)(((smoothed_func(ds, u, v, 0, -4) < smoothed_func(ds, u, v, 7, -5)) << 7) + ((smoothed_func(ds, u, v, -17, -9) < smoothed_func(ds, u, v, 13, -7)) << 6) + ((smoothed_func(ds, u, v, 22, -6) < smoothed_func(ds, u, v, -11, 5)) << 5) + ((smoothed_func(ds, u, v, 2, -8) < smoothed_func(ds, u, v, 23, -11)) << 4) + ((smoothed_func(ds, u, v, 7, -10) < smoothed_func(ds, u, v, -1, 14)) << 3) + ((smoothed_func(ds, u, v, -3, -10) < smoothed_func(ds, u, v, 8, 3)) << 2) + ((smoothed_func(ds, u, v, -13, 1) < smoothed_func(ds, u, v, -6, 0)) << 1) + ((smoothed_func(ds, u, v, -7, -21) < smoothed_func(ds, u, v, 6, -14)) << 0));
+		pt.description[24] = (Rox_Uchar)(((smoothed_func(ds, u, v, 18, 19) < smoothed_func(ds, u, v, -4, -6)) << 7) + ((smoothed_func(ds, u, v, 10, 7) < smoothed_func(ds, u, v, -1, -4)) << 6) + ((smoothed_func(ds, u, v, -1, 21) < smoothed_func(ds, u, v, 1, -5)) << 5) + ((smoothed_func(ds, u, v, -10, 6) < smoothed_func(ds, u, v, -11, -2)) << 4) + ((smoothed_func(ds, u, v, 18, -3) < smoothed_func(ds, u, v, -1, 7)) << 3) + ((smoothed_func(ds, u, v, -3, -9) < smoothed_func(ds, u, v, -5, 10)) << 2) + ((smoothed_func(ds, u, v, -13, 14) < smoothed_func(ds, u, v, 17, -3)) << 1) + ((smoothed_func(ds, u, v, 11, -19) < smoothed_func(ds, u, v, -1, -18)) << 0));
+		pt.description[25] = (Rox_Uchar)(((smoothed_func(ds, u, v, 8, -2) < smoothed_func(ds, u, v, -18, -23)) << 7) + ((smoothed_func(ds, u, v, 0, -5) < smoothed_func(ds, u, v, -2, -9)) << 6) + ((smoothed_func(ds, u, v, -4, -11) < smoothed_func(ds, u, v, 2, -8)) << 5) + ((smoothed_func(ds, u, v, 14, 6) < smoothed_func(ds, u, v, -3, -6)) << 4) + ((smoothed_func(ds, u, v, -3, 0) < smoothed_func(ds, u, v, -15, 0)) << 3) + ((smoothed_func(ds, u, v, -9, 4) < smoothed_func(ds, u, v, -15, -9)) << 2) + ((smoothed_func(ds, u, v, -1, 11) < smoothed_func(ds, u, v, 3, 11)) << 1) + ((smoothed_func(ds, u, v, -10, -16) < smoothed_func(ds, u, v, -7, 7)) << 0));
+		pt.description[26] = (Rox_Uchar)(((smoothed_func(ds, u, v, -2, -10) < smoothed_func(ds, u, v, -10, -2)) << 7) + ((smoothed_func(ds, u, v, -5, -3) < smoothed_func(ds, u, v, 5, -23)) << 6) + ((smoothed_func(ds, u, v, 13, -8) < smoothed_func(ds, u, v, -15, -11)) << 5) + ((smoothed_func(ds, u, v, -15, 11) < smoothed_func(ds, u, v, 6, -6)) << 4) + ((smoothed_func(ds, u, v, -16, -3) < smoothed_func(ds, u, v, -2, 2)) << 3) + ((smoothed_func(ds, u, v, 6, 12) < smoothed_func(ds, u, v, -16, 24)) << 2) + ((smoothed_func(ds, u, v, -10, 0) < smoothed_func(ds, u, v, 8, 11)) << 1) + ((smoothed_func(ds, u, v, -7, 7) < smoothed_func(ds, u, v, -19, -7)) << 0));
+		pt.description[27] = (Rox_Uchar)(((smoothed_func(ds, u, v, 5, 16) < smoothed_func(ds, u, v, 9, -3)) << 7) + ((smoothed_func(ds, u, v, 9, 7) < smoothed_func(ds, u, v, -7, -16)) << 6) + ((smoothed_func(ds, u, v, 3, 2) < smoothed_func(ds, u, v, -10, 9)) << 5) + ((smoothed_func(ds, u, v, 21, 1) < smoothed_func(ds, u, v, 8, 7)) << 4) + ((smoothed_func(ds, u, v, 7, 0) < smoothed_func(ds, u, v, 1, 17)) << 3) + ((smoothed_func(ds, u, v, -8, 12) < smoothed_func(ds, u, v, 9, 6)) << 2) + ((smoothed_func(ds, u, v, 11, -7) < smoothed_func(ds, u, v, -8, -6)) << 1) + ((smoothed_func(ds, u, v, 19, 0) < smoothed_func(ds, u, v, 9, 3)) << 0));
+		pt.description[28] = (Rox_Uchar)(((smoothed_func(ds, u, v, 1, -7) < smoothed_func(ds, u, v, -5, -11)) << 7) + ((smoothed_func(ds, u, v, 0, 8) < smoothed_func(ds, u, v, -2, 14)) << 6) + ((smoothed_func(ds, u, v, 12, -2) < smoothed_func(ds, u, v, -15, -6)) << 5) + ((smoothed_func(ds, u, v, 4, 12) < smoothed_func(ds, u, v, 0, -21)) << 4) + ((smoothed_func(ds, u, v, 17, -4) < smoothed_func(ds, u, v, -6, -7)) << 3) + ((smoothed_func(ds, u, v, -10, -9) < smoothed_func(ds, u, v, -14, -7)) << 2) + ((smoothed_func(ds, u, v, -15, -10) < smoothed_func(ds, u, v, -15, -14)) << 1) + ((smoothed_func(ds, u, v, -7, -5) < smoothed_func(ds, u, v, 5, -12)) << 0));
+		pt.description[29] = (Rox_Uchar)(((smoothed_func(ds, u, v, -4, 0) < smoothed_func(ds, u, v, 15, -4)) << 7) + ((smoothed_func(ds, u, v, 5, 2) < smoothed_func(ds, u, v, -6, -23)) << 6) + ((smoothed_func(ds, u, v, -4, -21) < smoothed_func(ds, u, v, -6, 4)) << 5) + ((smoothed_func(ds, u, v, -10, 5) < smoothed_func(ds, u, v, -15, 6)) << 4) + ((smoothed_func(ds, u, v, 4, -3) < smoothed_func(ds, u, v, -1, 5)) << 3) + ((smoothed_func(ds, u, v, -4, 19) < smoothed_func(ds, u, v, -23, -4)) << 2) + ((smoothed_func(ds, u, v, -4, 17) < smoothed_func(ds, u, v, 13, -11)) << 1) + ((smoothed_func(ds, u, v, 1, 12) < smoothed_func(ds, u, v, 4, -14)) << 0));
+		pt.description[30] = (Rox_Uchar)(((smoothed_func(ds, u, v, -11, -6) < smoothed_func(ds, u, v, -20, 10)) << 7) + ((smoothed_func(ds, u, v, 4, 5) < smoothed_func(ds, u, v, 3, 20)) << 6) + ((smoothed_func(ds, u, v, -8, -20) < smoothed_func(ds, u, v, 3, 1)) << 5) + ((smoothed_func(ds, u, v, -19, 9) < smoothed_func(ds, u, v, 9, -3)) << 4) + ((smoothed_func(ds, u, v, 18, 15) < smoothed_func(ds, u, v, 11, -4)) << 3) + ((smoothed_func(ds, u, v, 12, 16) < smoothed_func(ds, u, v, 8, 7)) << 2) + ((smoothed_func(ds, u, v, -14, -8) < smoothed_func(ds, u, v, -3, 9)) << 1) + ((smoothed_func(ds, u, v, -6, 0) < smoothed_func(ds, u, v, 2, -4)) << 0));
+		pt.description[31] = (Rox_Uchar)(((smoothed_func(ds, u, v, 1, -10) < smoothed_func(ds, u, v, -1, 2)) << 7) + ((smoothed_func(ds, u, v, 8, -7) < smoothed_func(ds, u, v, -6, 18)) << 6) + ((smoothed_func(ds, u, v, 9, 12) < smoothed_func(ds, u, v, -7, -23)) << 5) + ((smoothed_func(ds, u, v, 8, -6) < smoothed_func(ds, u, v, 5, 2)) << 4) + ((smoothed_func(ds, u, v, -9, 6) < smoothed_func(ds, u, v, -12, -7)) << 3) + ((smoothed_func(ds, u, v, -1, -2) < smoothed_func(ds, u, v, -7, 2)) << 2) + ((smoothed_func(ds, u, v, 9, 9) < smoothed_func(ds, u, v, 7, 15)) << 1) + ((smoothed_func(ds, u, v, 6, 2) < smoothed_func(ds, u, v, -6, 6)) << 0));
+
+      error = rox_dynvec_brief_point_append(obj, &pt);
+      ROX_ERROR_CHECK_TERMINATE ( error );
+    }
+
+function_terminate:
+    rox_array2d_uint_del(&integral);
+
+    return error;
+}
+

@@ -1,0 +1,63 @@
+\subsection{Texture identification}
+\label{sse:ident_texture}
+
+\noindent The texture identification module performs the identification of textured model images as shown in Figure~\ref{fig:ident_texture}. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.45\textwidth]{vision/figures/ident_phototexture} 
+\caption{Example of image model that can be identified with the texture identification module.}
+\label{fig:ident_texture}
+\end{figure}
+
+\subsubsection{The {\tt Rox\_Ident\_Texture\_SE3} object}
+\label{sss:ident_texture_object}
+A \lstinline$Rox_Ident_Texture_SE3$ object is a pointer to the opaque structure \lstinline$Rox_Ident_Texture_SE3_Struct$: 
+
+\begin{lstlisting}
+typedef struct Rox_Ident_Texture_SE3_Struct * Rox_Ident_Texture_SE3
+\end{lstlisting}
+
+
+\subsubsection{Creating/Deleting a {\tt Rox\_Ident\_Texture\_SE3}}
+\label{sss:ident_texture_newdel}
+
+\noindent Functions are provided to allocate and deallocate a \lstinline$Rox_Ident_Texture_SE3$ object~:
+
+\begin{lstlisting}
+Rox_Error rox_ident_texture_se3_new (Rox_Ident_Texture_SE3 *ident_texture);
+\end{lstlisting}
+
+\noindent The function creates a new identification structure. Shall be called before
+any other function of this module. Returns a pointer to the Rox\_Ident\_Texture object. \\
+
+\begin{lstlisting}
+Rox_Error 	rox_ident_texture_se3_del (Rox_Ident_Texture_SE3 *ident_texture); 
+\end{lstlisting}
+
+\noindent Deletes an identification structure. First parameter is a pointer
+created with rox\_ident\_texture\_new. Shall be called to free up memory when
+user does not need identification anymore.
+
+\subsubsection{Main functions related to {\tt Rox\_Ident\_Texture\_SE3}}
+\label{sss:ident_texture_functions}
+~\\
+
+A model to be identified can be set using the following function:
+\begin{lstlisting}
+Rox_Error rox_ident_texture_se3_set_model (Rox_Ident_Texture_SE3 ident_texture, Rox_Model_Single_Plane model); 
+\end{lstlisting}
+A function is available to identify a given model in a camera object: 
+The second function input the camera containing the current image in which to identify the texture:
+\begin{lstlisting}
+Rox_Error rox_ident_texture_se3_make (Rox_MatSE3 pose, Rox_Ident_Texture_SE3 ident_texture, Rox_Camera camera);
+\end{lstlisting}
+
+% If identification is successfull, the resulting homography matrix locating the serched texture in the image can be obtained with the following function: 
+% \begin{lstlisting}
+% Rox_Bool rox_ident_texture_get_matsl3_copy(Rox_MatSL3 H, Rox_Ident_Texture ident_texture)
+% \end{lstlisting}
+
+%\begin{lstlisting}
+%Rox_MatSL3 rox_ident_texture_get_matsl3(Rox_Ident_Texture ident_texture) 	
+%\end{lstlisting}

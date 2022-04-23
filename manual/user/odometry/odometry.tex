@@ -1,0 +1,39 @@
+\chapter{Odometry Module}
+\label{cha:vodom}
+Visual odometry is the process of determining the position and
+orientation (the pose) of a camera relative to a given target by
+analyzing a sequence of images. Contrarily to object tracking in
+image coordinates, visual odometry needs calibrated cameras. It 
+implies the knowledge of camera intrinsic parameters. Consequently, 
+the \lstinline$Rox_Camera$ object shall be fed with the correct 
+camera  intrinsic parameters. Incorrect camera intrinsic parameters
+will produce an incorrect localization.
+
+The localization of the camera in the environment can be useful in several applications such as robotics, augmented reality, and many others.\\
+
+The Odometry module contains the following sub-modules:
+
+\begin{description}
+% \item[Odometry Parameters]~: module with structures and methods for handling the tracking parameters
+  \item[Odometry Single Plane]~: module with structures and methods for camera localization relative to a single plane
+  \item[Odometry Multi Planes]~: module with structures and methods for camera localization relative to a multi planes
+  \item[Odometry Inertial Observer]~: module with structures and methods for camera localization with inertial observer
+\end{description}
+
+\section{Visual odometry observing a single plane}
+\label{sec:vodm_single_plane}
+
+\input{odometry/odometry_m2d_params.tex}
+
+\input{odometry/odometry_m2d.tex}
+
+\section{Visual odometry observing multi planes}
+\label{sec:vodm_multi_plane}
+
+%\input{odometry/odometry_m3d_params.tex}
+
+\input{odometry/odometry_m3d.tex}
+
+\section{Visual odometry with an inertial observer}
+
+\input{odometry/fusion_visual_inertial.tex}

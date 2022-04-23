@@ -1,0 +1,88 @@
+\subsubsection{Image Files}
+\label{sss:image_files}   
+
+Currently, the only supported format in the library is raw PGM
+(Portable Gray Map)
+\footnote{{http://netpbm.sourceforge.net/doc/pgm.html}}. However,
+external libraries can be easily used to read images from files. \\
+
+%See for example the porgrammer manual rox\_opencv.pdf for the
+%compatibility of \rox{} with the OpenCV library. \\
+
+%It can be used either with the \lstinline$Rox_ImageUchar$ structure or with the \lstinline$Rox_Image$ structure. The latter representing pixels with 32 bits, a conversion is done between byte and float types.
+
+\paragraph{Reading Image Files}
+\label{sss:image_files-reading}
+~\\~\\
+There are functions to read image files~:
+
+\begin{description}
+  \item [rox\_image\_new\_readpgm]
+  \item [rox\_image\_readpgm]
+\end{description}
+
+The \lstinline$rox_image_readpgm$ function takes two parameters~: the
+filename as a string and the image object where to store the image
+data. The function first allocate memory for the structure using the
+adequate (rox\_image\_new) function with the width and height
+parameters matching the image file to load. Then they store the image
+data in the structure.
+
+The other function takes only one parameter, the filename of the pgm file. The function store the image file data in an already allocated structure. They raise an error if the dimensions of the image file do not match the structure.\\
+
+Typically, we use a \lstinline$rox\_image\_new\_readpgm$ function to
+read the first image of a sequence and allocate correctly the
+corresponding structure. Then, assuming that all images of a sequence
+have the same dimensions, we can re-use the same structure for the
+next images, using the \lstinline$rox\_image\_readpgm$ function. Thus,
+the structure is safely allocated while loading the reference image
+and the other images are read previously to perform the tracking.
+
+\paragraph{Saving Image Files}
+\label{sss:image_files-saving}
+~\\~\\
+The following functions save data from an image structure to an image file~:
+
+\begin{description}
+  \item [rox\_image\_savepgm]~: Save an image in a pgm file
+  %\item [rox\_imageuchar\_savepgm]~: Save an 8-bits image in a pgm file
+\end{description}
+
+The function returns {\tt ROX\_TRUE} when the saving was successful and {\tt ROX\_FALSE} when it was not. 
+
+%Saving an image from an \lstinline$Rox_ImageUchar$ structure is straightforward~: just use the \lstinline$rox_imageuchar_savepgm$ function 
+%with the file name and the structure as parameters. \\
+
+%Saving an image from an \lstinline$Rox_Image$ structure requires a type conversion from float to byte. \\
+
+% For better visualizations, the function \lstinline$rox_image_savepgn$ automatically performs a linear rescaling of the intensities of the image to be written between the values {\tt 0} and {\tt 255}.
+
+We give below an example of reading and saving an image from file:
+
+\begin{lstlisting}
+{
+  Rox_Image I1, I2;
+
+  /* Read an image in the 1st image structure */
+  I1 = rox_image_new_readpgm("image.pgm");
+
+  /* Allocate memory in the 2nd image structure */
+  I2 = rox_image_new(I1->cols, I1->rows);
+
+  /* Read image in the 2nd image structure */
+  rox_image_readpgm(I2, "image.pgm");
+
+  /* Modify the images
+  ....
+
+  /* Save the modified images */
+  rox_image_savepgm("image1.pgm", I1);
+  rox_image_savepgm("image2.pgm", I2);
+
+  /* Free memory
+  rox_image_del(I2);
+  rox_image_del(I1);
+}
+\end{lstlisting}
+
+

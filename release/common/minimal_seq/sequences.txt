@@ -1,0 +1,8 @@
+Download at 
+ 
+http://public.robocortex.com/download/sequences/cube.zip
+http://public.robocortex.com/download/sequences/calibration.zip
+http://public.robocortex.com/download/sequences/identification.zip
+http://public.robocortex.com/download/sequences/inertial.zip
+http://public.robocortex.com/download/sequences/motion_detection.zip
+http://public.robocortex.com/download/sequences/rectangle_detection.zip

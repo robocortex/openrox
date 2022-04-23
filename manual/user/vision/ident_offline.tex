@@ -1,0 +1,55 @@
+\subsection{Offline identification}
+\label{sse:ident_offline}
+
+\noindent The offline identification module performs the identification of textured model images similarly to the texture identification module. However, higher precision and rate of success are targeted. Thus, the offline identification module is generally much slower than the texture identification module and should be used for offline applications.
+
+\subsubsection{Creating/Deleting a {\tt Rox\_Ident}}
+\label{sss:ident_newdel}
+~\\
+
+\noindent Functions are provided to allocate and deallocate a \lstinline$Rox_Ident$ object~:
+
+\begin{lstlisting}
+Rox_Image rox_ident_new(Rox_Void);
+\end{lstlisting}
+
+\noindent The \lstinline$rox_ident_new$ creates a new identification structure. Shall be called before
+any other function of this module. Returns a Rox\_Ident pointer. \\
+
+\begin{lstlisting}
+Rox_Void rox_ident_del(Rox_Ident ident);
+\end{lstlisting}
+
+\noindent Deletes an identification structure. First parameter is a pointer
+created with rox\_ident\_new. Shall be called to free up memory when
+user does not need identification anymore.
+
+\subsubsection{Main functions related to {\tt Rox\_Ident}}
+\label{sss:ident_functions}
+~\\
+
+\noindent The following functions can be used for the identification of a planar textured object:
+
+\begin{lstlisting}
+Rox_Void rox_ident_set_method(Rox_Ident ident, const Rox_Uint method);
+\end{lstlisting}
+
+\noindent Set the identication method:
+\begin{itemize}
+\item method = 2 : fast identification method but less robust
+\item method = 1 : slow identification method but more robust
+\item method = 0 : total (try both fast and slow identification methods)
+\end{itemize}
+The default identification method is 0.
+
+\begin{lstlisting}
+Rox_Bool rox_ident_make(Rox_Ident ident, Rox_Image image_model, Rox_Image image_search);
+\end{lstlisting}
+
+\noindent Identify the image image\_model into the current image image\_search. Return ROX\_TRUE if the image\_model is identified in the image\_search.
+
+\begin{lstlisting}
+Rox_Void rox_ident_get_matsl3_copy(Rox_MatSL3 H, Rox_Ident ident);
+\end{lstlisting}
+
+\noindent Get the homographhy matrix H allowing to transform the corners if the model image into the corresponding corners in the image\_search.

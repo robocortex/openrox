@@ -1,0 +1,59 @@
+\subsection{Special Linear Group 3$\times$3}
+\label{sec:matsl3}
+The Special Linear Group SL(3) is defined by the set of 3$\times$3 matrices $\bf{H}$ that verify the following constraint:
+\[
+\det(\bf{H}) = 1
+\] 
+
+\subsubsection{The object {\tt Rox\_MatSL3}}
+\label{sss:matsl3_object}
+~\\~\\
+A \lstinline$Rox_MatSL3$ object can be declared using the pointer to a \lstinline$Rox_MatSL3_Struct$: 
+
+\begin{lstlisting}
+typedef struct Rox_MatSL3_Struct* Rox_MatSL3;
+\end{lstlisting}
+
+The structure is opaque to the user and can only be accessed through constructors, destructors and methods described in the following sections.
+
+\subsubsection{Creating/Deleting a {\tt Rox\_MatSL3}}
+\label{sss:matsl3_delnew}
+~\\~\\
+Functions are provided to allocate, initialize and deallocate an \lstinline$Rox_MatSL3$ object~:
+\begin{lstlisting}
+Rox_Error rox_matsl3_new(Rox_MatSL3 * H);
+\end{lstlisting}
+The \lstinline$rox_matsl3_new$ function allocates memory for data. By default, the matrix is initialized to the identity.\\ 
+
+% \begin{lstlisting}
+% Rox_Matrix rox_matsl3_new_init(const Rox_Real data[9]);
+% \end{lstlisting}
+% The \lstinline$rox_matsl3_new_init$ function first allocates memory with the default constructor and then copies the parameter `data' to initialize matrix.
+% The data contains the entries of the matrix row by row.\\
+
+\begin{lstlisting}
+Rox_Error rox_matsl3_del(Rox_MatSL3 * H);
+\end{lstlisting}
+The \lstinline$rox_matsl3_del$ function deallocates memory for an \lstinline$Rox_MatSL3$ structure. It is necessary to call this function when the
+structure is not used any more or before overwriting it.
+
+\subsubsection{Main functions related to {\tt Rox\_MatSL3}}
+\label{sss:matsl3_methods}
+~\\~\\
+
+Firstly, it is possible to get / set information from \lstinline$Rox_MatSL3$ structure:
+\begin{description}
+  \item[rox\_matsl3\_get\_data]~: Get a copy of the data of the matsl3 matrix.
+%  \item[rox\_matsl3\_get\_value]~: Returns a value of the matsl3 matrix.
+  \item[rox\_matsl3\_set\_data]~: Set the data of the matsl3 matrix.
+  \item[rox\_matsl3\_set\_value]~: changes a value of the matrix.
+\end{description}
+
+Several functions are provided to use matrices, here the most important functions will be described to make basic matrix calculus.
+\begin{description}
+  \item[rox\_matsl3\_mulmatmat]~: Computes the multiplication of two matrices.
+  \item[rox\_matsl3\_inv]~: Computes the inverse of the matrix.
+  \item[rox\_matsl3\_display]~: Display the matrix.
+\end{description}
+
+Other functions are provided, further information is available in the programmer manual.
